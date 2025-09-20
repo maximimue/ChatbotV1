@@ -29,6 +29,21 @@ if (isset($configPath) && file_exists($configPath)) {
     die('Konfigurationsdatei nicht gefunden. Bitte setzen Sie $configPath vor dem Einbinden von init.php.');
 }
 
+
+// Basisverzeichnis des Hotels und Pfad zur Konfiguration verfügbar machen
+if (!isset($HOTEL_BASE_PATH) || !is_string($HOTEL_BASE_PATH) || $HOTEL_BASE_PATH === '') {
+    if (isset($resolvedConfig) && $resolvedConfig !== false) {
+        $HOTEL_BASE_PATH = dirname($resolvedConfig);
+    } else {
+        $HOTEL_BASE_PATH = dirname(__DIR__);
+    }
+}
+
+if (!isset($HOTEL_CONFIG_PATH) || !is_string($HOTEL_CONFIG_PATH) || $HOTEL_CONFIG_PATH === '') {
+    $HOTEL_CONFIG_PATH = isset($resolvedConfig) && $resolvedConfig !== false ? $resolvedConfig : null;
+}
+
+
 // Eindeutigen Schlüssel für das Hotel ableiten (Konfiguration kann optional $HOTEL_KEY setzen)
 if (!isset($HOTEL_KEY) || !is_string($HOTEL_KEY) || $HOTEL_KEY === '') {
     if (isset($resolvedConfig) && $resolvedConfig !== false) {

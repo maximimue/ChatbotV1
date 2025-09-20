@@ -7,6 +7,7 @@ session_start();
 
 // hotelspezifische Konfiguration laden
 require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/admin_accounts.php';
 
 // Relativer Pfad zum Core‑Verzeichnis. Wird vom Hotel‑Wrapper gesetzt. Fallback: '.'
 $coreRelative = $coreRelative ?? '.';
@@ -24,21 +25,40 @@ if ($alreadyLoggedIn) {
     exit;
 }
 
+$accountsFile = admin_accounts_file_path($HOTEL_BASE_PATH ?? null);
+$availableAccounts = admin_load_accounts(
+    $accountsFile,
+    $ADMIN_USERS ?? null,
+    $ADMIN_USER ?? null,
+    $ADMIN_PASSWORD_HASH ?? null
+);
+
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim((string)($_POST['username'] ?? ''));
     $password = (string)($_POST['password'] ?? '');
-    $storedUser = (isset($ADMIN_USER) && is_string($ADMIN_USER)) ? $ADMIN_USER : '';
-    $storedHash = (isset($ADMIN_PASSWORD_HASH) && is_string($ADMIN_PASSWORD_HASH)) ? $ADMIN_PASSWORD_HASH : '';
+    $authenticated = false;
 
-    $usernameMatches = ($storedUser !== '') && hash_equals($storedUser, $username);
-    $passwordMatches = ($storedHash !== '') && password_verify($password, $storedHash);
+    foreach ($availableAccounts as $account) {
+        $storedUser = $account['username'];
+        $storedHash = $account['password_hash'];
 
-    if ($usernameMatches && $passwordMatches) {
+        if ($storedUser === '' || $storedHash === '') {
+            continue;
+        }
+
+        if (hash_equals($storedUser, $username) && password_verify($password, $storedHash)) {
+            $authenticated = true;
+            $selectedUser = $storedUser;
+            break;
+        }
+    }
+
+    if ($authenticated) {
         session_regenerate_id(true);
         $_SESSION[$adminSessionKey] = [
             'authenticated' => true,
-            'username' => $storedUser,
+            'username' => $selectedUser ?? $username,
             'login_time' => time(),
         ];
         header('Location: admin.php');

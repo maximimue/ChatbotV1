@@ -20,11 +20,21 @@ $LOG_DB = __DIR__ . '/data/logs.sqlite';
 // URL der Haupt‑Hotel‑Website. Diese wird für den "Zurück zur Website"‑Link verwendet.
 $HOTEL_URL = 'https://www.example-hotel.de';
 
-// Administrativer Benutzername. Für den Zugriff auf das Backend (FAQ‑Editor/Analyse).
+// Administrativer Benutzername. Für den Zugriff auf das Backend (FAQ/Analyse/Einstellungen).
 $ADMIN_USER = 'admin';
 
 // Passwort‑Hash für den administrativen Zugang. Verwenden Sie password_hash() zur Generierung eines sicheren Hashes.
 $ADMIN_PASSWORD_HASH = password_hash('changeme', PASSWORD_DEFAULT);
+
+// Alternativ können mehrere Benutzer über $ADMIN_USERS hinterlegt werden (Benutzername + Passwort-Hash).
+// Die Administrationsoberfläche legt ansonsten eine data/admin_users.json an und verwaltet diese Datei.
+// $ADMIN_USERS = [
+//     [
+//         'username' => 'admin',
+//         'password_hash' => password_hash('changeme', PASSWORD_DEFAULT),
+//     ],
+// ];
+
 
 // Hinweis: Diese Datei ist nur ein Beispiel. Für jedes Hotel sollten Sie eine eigene config.php mit angepassten Werten anlegen.
 
