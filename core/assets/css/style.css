@@ -276,7 +276,7 @@ body {
 
 .admin-dashboard a { color:var(--accent); }
 
-.admin-shell { max-width:1200px; margin:0 auto; padding:32px 24px 48px; display:flex; flex-direction:column; gap:24px; }
+.admin-shell { max-width:1800px; margin:0 auto; padding:32px 24px 48px; display:flex; flex-direction:column; gap:24px; }
 
 .admin-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
 .admin-header h1 { margin:0; font-size:28px; }
