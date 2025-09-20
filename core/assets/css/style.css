@@ -1,0 +1,186 @@
+/*
+ * Grundlegende Styles für den Chatbot.
+ *
+ * Dieses Stylesheet definiert das Layout des Chat‑Overlays, der Chatbox und der
+ * Steuerelemente. Es kann pro Hotel individuell ergänzt werden, indem weitere
+ * CSS‑Dateien eingebunden oder dieser Datei angehängt werden.
+ */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Hintergrundbild – kann in der Konfiguration durch ein anderes Bild ersetzt werden */
+body {
+  background: #f0f0f0;
+  /* Ein optionales Hintergrundbild kann über CSS oder im HTML gesetzt werden */
+  background-size: cover;
+  background-position: center;
+}
+
+.chat-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  max-height: 80vh;
+  background: grey;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.chat-box header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.chat-box header img {
+  max-width: 80%;
+  height: auto;
+}
+
+#chat-log {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.message {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.message.user {
+  text-align: right;
+  color: #003366;
+}
+
+.message.bot {
+  text-align: left;
+  color: #333;
+}
+
+#typing-indicator .bubble {
+  font-style: italic;
+  color: #666;
+  background: #f0f0f0;
+  border-radius: 14px;
+  padding: 8px 12px;
+}
+
+.chat-controls input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+}
+
+.chat-controls .privacy {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.9em;
+}
+
+.chat-controls .privacy input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.chat-controls button {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: #003366;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.chat-controls button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.return-link {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+.return-link:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Chatblasen-Grundlayout */
+#chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+/* Gemeinsame Basis */
+.msg {
+  display: flex;
+  width: 100%;
+}
+
+.msg .bubble {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  line-height: 1.4;
+}
+
+/* Bot (links) */
+.msg.bot {
+  justify-content: flex-start;
+}
+.msg.bot .bubble {
+  background: #f0f0f0;
+  color: #000;
+  border-top-left-radius: 0;
+}
+
+/* User (rechts) */
+.msg.user {
+  justify-content: flex-end;
+}
+.msg.user .bubble {
+  background: #0078d7;
+  color: #fff;
+  border-top-right-radius: 0;
+  text-align: right;
+}
