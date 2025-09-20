@@ -18,13 +18,29 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Ermitteln und Laden der Konfiguration
 if (isset($configPath) && file_exists($configPath)) {
+    $resolvedConfig = realpath($configPath);
     require $configPath;
 } elseif (file_exists(__DIR__ . '/../config.php')) {
     // Fallback für Entwicklungszwecke: lokale config.php im Projekt
+    $resolvedConfig = realpath(__DIR__ . '/../config.php');
     require __DIR__ . '/../config.php';
 } else {
     // Keine Konfiguration gefunden => Fehlermeldung ausgeben
     die('Konfigurationsdatei nicht gefunden. Bitte setzen Sie $configPath vor dem Einbinden von init.php.');
+}
+
+// Eindeutigen Schlüssel für das Hotel ableiten (Konfiguration kann optional $HOTEL_KEY setzen)
+if (!isset($HOTEL_KEY) || !is_string($HOTEL_KEY) || $HOTEL_KEY === '') {
+    if (isset($resolvedConfig) && $resolvedConfig !== false) {
+        $HOTEL_KEY = basename(dirname($resolvedConfig));
+    } else {
+        $HOTEL_KEY = 'default';
+    }
+}
+
+// Session-Namespace für die Admin-Authentifizierung vorbereiten
+if (!isset($ADMIN_SESSION_KEY) || !is_string($ADMIN_SESSION_KEY) || $ADMIN_SESSION_KEY === '') {
+    $ADMIN_SESSION_KEY = 'admin_auth_' . hash('sha256', $HOTEL_KEY);
 }
 
 // Einrichtung der SQLite‑Datenbank für die Protokollierung

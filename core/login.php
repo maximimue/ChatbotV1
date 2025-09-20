@@ -11,18 +11,36 @@ require_once __DIR__ . '/init.php';
 // Relativer Pfad zum Core‑Verzeichnis. Wird vom Hotel‑Wrapper gesetzt. Fallback: '.'
 $coreRelative = $coreRelative ?? '.';
 
-// Wenn bereits eingeloggt, zur Admin‑Übersicht weiterleiten
-if (isset($_SESSION['admin']) && $_SESSION['admin'] === true) {
+// Session-Key für den Admin-Zugang bestimmen
+$adminSessionKey = $ADMIN_SESSION_KEY ?? 'admin';
+
+// Prüfen, ob bereits eine gültige Admin-Sitzung besteht
+$existingAuth = $_SESSION[$adminSessionKey] ?? null;
+$alreadyLoggedIn = is_array($existingAuth)
+    ? (!empty($existingAuth['authenticated']))
+    : ($existingAuth === true);
+if ($alreadyLoggedIn) {
     header('Location: admin.php');
     exit;
 }
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-    if ($username === $ADMIN_USER && password_verify($password, $ADMIN_PASSWORD_HASH)) {
-        $_SESSION['admin'] = true;
+    $username = trim((string)($_POST['username'] ?? ''));
+    $password = (string)($_POST['password'] ?? '');
+    $storedUser = (isset($ADMIN_USER) && is_string($ADMIN_USER)) ? $ADMIN_USER : '';
+    $storedHash = (isset($ADMIN_PASSWORD_HASH) && is_string($ADMIN_PASSWORD_HASH)) ? $ADMIN_PASSWORD_HASH : '';
+
+    $usernameMatches = ($storedUser !== '') && hash_equals($storedUser, $username);
+    $passwordMatches = ($storedHash !== '') && password_verify($password, $storedHash);
+
+    if ($usernameMatches && $passwordMatches) {
+        session_regenerate_id(true);
+        $_SESSION[$adminSessionKey] = [
+            'authenticated' => true,
+            'username' => $storedUser,
+            'login_time' => time(),
+        ];
         header('Location: admin.php');
         exit;
     } else {
@@ -83,9 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         <form method="post">
             <label>Benutzername</label>
-            <input type="text" name="username" required>
+            <input type="text" name="username" autocomplete="username" required autofocus>
             <label>Passwort</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" autocomplete="current-password" required>
             <button type="submit">Anmelden</button>
         </form>
     </div>
