@@ -1,15 +1,14 @@
 <?php
 /**
- * Analyse-Seite für die protokollierten Benutzeranfragen.
- *
- * Zeigt die am häufigsten gestellten Fragen sowie eine Liste der letzten
- * Anfragen mit Antworten. Der Zugriff ist Administratoren vorbehalten.
+ * Analyse-Seite für die protokollierten Benutzeranfragen (SQLite-Version).
+ * Zeigt die am häufigsten gestellten Fragen, letzte Anfragen, Stoßzeiten etc.
+ * Zugriff nur für Admins.
  */
 
 session_start();
 require_once __DIR__ . '/init.php';
 
-// Relativer Pfad zum Core‑Verzeichnis (vom Hotel‑Wrapper gesetzt)
+// Relativer Pfad zum Core-Verzeichnis (vom Hotel-Wrapper gesetzt)
 $coreRelative = $coreRelative ?? '.';
 
 if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
@@ -17,30 +16,38 @@ if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
     exit;
 }
 
-// Daten vorbereiten (Filter, Statistiken, Export)
+// --- Debug optional aktivieren (?debug=1) ---
+if (isset($_GET['debug'])) {
+    @ini_set('display_errors', 1);
+    @ini_set('display_startup_errors', 1);
+    @error_reporting(E_ALL);
+}
+
+// --- Daten und Filter vorbereiten ---
 $stats = [];
 $logs  = [];
 $byHour = [];
-$byDay = [];
-$byDow = [];
+$byDay  = [];
+$byDow  = [];
 $totals = ['total'=>0,'empty'=>0,'avg_q_len'=>0,'avg_a_len'=>0];
+$fatalError = null;
 
-// Eingabeparameter (Filter)
+// Filter
 $start = isset($_GET['start']) ? trim($_GET['start']) : '';
 $end   = isset($_GET['end'])   ? trim($_GET['end'])   : '';
 $q     = isset($_GET['q'])     ? trim($_GET['q'])     : '';
 $limit = isset($_GET['limit']) ? (int)$_GET['limit']  : 100;
 if ($limit < 10 || $limit > 1000) { $limit = 100; }
 
-// WHERE-Klausel aufbauen
+// WHERE-Klausel aufbauen (SQLite)
 $where = [];
 $params = [];
-if ($start !== '') { $where[] = 'time >= :start'; $params[':start'] = $start . ' 00:00:00'; }
-if ($end   !== '') { $where[] = 'time <= :end';   $params[':end']   = $end   . ' 23:59:59'; }
-if ($q     !== '') { $where[] = 'question LIKE :q'; $params[':q']     = '%' . $q . '%'; }
+if ($start !== '') { $where[] = "time >= :start"; $params[':start'] = $start . ' 00:00:00'; }
+if ($end   !== '') { $where[] = "time <= :end";   $params[':end']   = $end   . ' 23:59:59'; }
+if ($q     !== '') { $where[] = "question LIKE :q"; $params[':q'] = '%' . $q . '%'; }
 $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
-// Export CSV Handler
+// CSV-Export
 if (isset($_GET['export']) && $_GET['export'] === 'csv' && isset($db) && $db instanceof PDO) {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="chat_logs.csv"');
@@ -57,7 +64,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv' && isset($db) && $db ins
     exit;
 }
 
-// Query-Parameter für Links (Export-URL)
+// Export-URL mit aktiven Parametern
 $queryParams = http_build_query(array_filter([
     'start' => $start,
     'end'   => $end,
@@ -66,28 +73,49 @@ $queryParams = http_build_query(array_filter([
 ], function($v){ return $v !== null && $v !== ''; }));
 $exportUrl = $_SERVER['PHP_SELF'] . '?' . ($queryParams ? ($queryParams . '&') : '') . 'export=csv';
 
+// --- SQLite-Funktionsalias / Formatierung ---
+// time: TEXT/DATETIME kompatibel
+$fnDate = "strftime('%Y-%m-%d', time)";               // Tagesaggregation
+$fnHour = "CAST(strftime('%H', time) AS INTEGER)";     // Stunde 0..23
+$fnDow  = "CAST(strftime('%w', time) AS INTEGER)";     // 0=So..6=Sa
+$fnQLen = "LENGTH(question)";
+$fnALen = "LENGTH(answer)";
+$dowIsSundayZero = true; // für die Anzeige
+
+// --- Datenbankabfragen ---
 if (isset($db) && $db instanceof PDO) {
+  try {
     // Top 20 Fragen
-    $sqlTop = "SELECT question, COUNT(*) AS cnt FROM logs $whereSql GROUP BY question ORDER BY cnt DESC LIMIT 20";
-    $stmt = $db->prepare($sqlTop);
-    foreach ($params as $k => $v) { $stmt->bindValue($k, $v); }
-    $stmt->execute();
-    $stats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sqlTop = "SELECT question, COUNT(*) AS cnt
+               FROM logs
+               $whereSql
+               GROUP BY question
+               ORDER BY cnt DESC
+               LIMIT 20";
+    $stmtTop = $db->prepare($sqlTop);
+    foreach ($params as $k => $v) { $stmtTop->bindValue($k, $v); }
+    $stmtTop->execute();
+    $stats = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
 
     // Letzte Einträge
-    $sqlLast = "SELECT question, answer, time FROM logs $whereSql ORDER BY time DESC LIMIT :limit";
-    $stmt2 = $db->prepare($sqlLast);
-    foreach ($params as $k => $v) { $stmt2->bindValue($k, $v); }
-    $stmt2->bindValue(':limit', $limit, PDO::PARAM_INT);
-    $stmt2->execute();
-    $logs = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    $sqlLast = "SELECT question, answer, time
+                FROM logs
+                $whereSql
+                ORDER BY time DESC
+                LIMIT :limit";
+    $stmtLast = $db->prepare($sqlLast);
+    foreach ($params as $k => $v) { $stmtLast->bindValue($k, $v); }
+    $stmtLast->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmtLast->execute();
+    $logs = $stmtLast->fetchAll(PDO::FETCH_ASSOC);
 
-    // Totals (Gesamtanzahl, leere Antworten, durchschnittliche Längen)
+    // KPIs / Totals
     $sqlTotals = "SELECT COUNT(*) AS total,
                          SUM(CASE WHEN (answer IS NULL OR answer='') THEN 1 ELSE 0 END) AS empty_cnt,
-                         AVG(CHAR_LENGTH(question)) AS avg_q_len,
-                         AVG(CHAR_LENGTH(answer)) AS avg_a_len
-                  FROM logs $whereSql";
+                         AVG($fnQLen) AS avg_q_len,
+                         AVG($fnALen) AS avg_a_len
+                  FROM logs
+                  $whereSql";
     $stmtT = $db->prepare($sqlTotals);
     foreach ($params as $k => $v) { $stmtT->bindValue($k, $v); }
     $stmtT->execute();
@@ -99,26 +127,43 @@ if (isset($db) && $db instanceof PDO) {
         $totals['avg_a_len'] = (int)round($t['avg_a_len']);
     }
 
-    // Verteilung nach Stunde (Stoßzeiten)
-    $sqlHour = "SELECT HOUR(time) AS h, COUNT(*) AS cnt FROM logs $whereSql GROUP BY HOUR(time) ORDER BY h";
+    // Stoßzeiten (Stunde)
+    $sqlHour = "SELECT $fnHour AS h, COUNT(*) AS cnt
+                FROM logs
+                $whereSql
+                GROUP BY $fnHour
+                ORDER BY h";
     $stmtH = $db->prepare($sqlHour);
     foreach ($params as $k => $v) { $stmtH->bindValue($k, $v); }
     $stmtH->execute();
     $byHour = $stmtH->fetchAll(PDO::FETCH_ASSOC);
 
     // Verlauf je Tag (letzte 30 Tage)
-    $sqlDay = "SELECT DATE(time) AS d, COUNT(*) AS cnt FROM logs $whereSql GROUP BY DATE(time) ORDER BY d DESC LIMIT 30";
+    $sqlDay = "SELECT $fnDate AS d, COUNT(*) AS cnt
+               FROM logs
+               $whereSql
+               GROUP BY $fnDate
+               ORDER BY d DESC
+               LIMIT 30";
     $stmtD = $db->prepare($sqlDay);
     foreach ($params as $k => $v) { $stmtD->bindValue($k, $v); }
     $stmtD->execute();
-    $byDay = array_reverse($stmtD->fetchAll(PDO::FETCH_ASSOC)); // für zeitlich aufsteigende Darstellung
+    $byDay = array_reverse($stmtD->fetchAll(PDO::FETCH_ASSOC)); // aufsteigend anzeigen
 
-    // Wochentage (1=Sonntag in MySQL, wir mappen gleich im UI)
-    $sqlDow = "SELECT DAYOFWEEK(time) AS dow, COUNT(*) AS cnt FROM logs $whereSql GROUP BY DAYOFWEEK(time) ORDER BY dow";
+    // Verteilung nach Wochentag
+    $sqlDow = "SELECT $fnDow AS dow, COUNT(*) AS cnt
+               FROM logs
+               $whereSql
+               GROUP BY $fnDow
+               ORDER BY dow";
     $stmtW = $db->prepare($sqlDow);
     foreach ($params as $k => $v) { $stmtW->bindValue($k, $v); }
     $stmtW->execute();
     $byDow = $stmtW->fetchAll(PDO::FETCH_ASSOC);
+
+  } catch (Throwable $ex) {
+    $fatalError = $ex->getMessage();
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -199,7 +244,7 @@ if (isset($db) && $db instanceof PDO) {
     </div>
     <div class="field">
       <label for="q" class="muted">Suche (Frage enthält)</label>
-      <input type="text" id="q" name="q" placeholder="z. B. Frühstück, Spa, Parkplatz" value="<?php echo htmlspecialchars($q); ?>">
+      <input type="text" id="q" name="q" placeholder="z. B. Frühstück, Spa, Parkplatz" value="<?php echo htmlspecialchars($q); ?>">
     </div>
     <div class="field">
       <label for="limit" class="muted">Anzahl letzter Einträge</label>
@@ -209,6 +254,14 @@ if (isset($db) && $db instanceof PDO) {
       <button type="submit">Filter anwenden</button>
     </div>
   </form>
+
+  <?php if (!empty($fatalError)): ?>
+    <div class="card span-12" style="border-color:#ef4444">
+      <h2 style="color:#ef8888;margin-top:0;">Fehler bei der Datenabfrage</h2>
+      <div class="muted"><?php echo htmlspecialchars($fatalError); ?></div>
+      <p class="muted">Tipp: Seite mit <code>?debug=1</code> aufrufen. (SQLite aktiv)</p>
+    </div>
+  <?php endif; ?>
 
   <div class="grid">
     <!-- KPIs -->
@@ -257,7 +310,7 @@ if (isset($db) && $db instanceof PDO) {
           $maxHour = 0;
           foreach ($byHour as $r) { if ((int)$r['cnt'] > $maxHour) { $maxHour = (int)$r['cnt']; } }
           foreach ($byHour as $r):
-            $w = $maxHour ? intval(($r['cnt'] / $maxHour) * 100) : 0;
+            $w = $maxHour ? intval(((int)$r['cnt'] / $maxHour) * 100) : 0;
         ?>
           <div class="bar">
             <div class="label"><?php echo str_pad((string)$r['h'], 2, '0', STR_PAD_LEFT) . ':00'; ?></div>
@@ -273,12 +326,12 @@ if (isset($db) && $db instanceof PDO) {
       <h2>Verteilung nach Wochentag</h2>
       <div class="bars">
         <?php
-          $dowNames = [1=>'So',2=>'Mo',3=>'Di',4=>'Mi',5=>'Do',6=>'Fr',7=>'Sa'];
+          $dowNames = [0=>'So',1=>'Mo',2=>'Di',3=>'Mi',4=>'Do',5=>'Fr',6=>'Sa'];
           $maxDow = 0;
           foreach ($byDow as $r) { if ((int)$r['cnt'] > $maxDow) { $maxDow = (int)$r['cnt']; } }
           foreach ($byDow as $r):
             $name = isset($dowNames[(int)$r['dow']]) ? $dowNames[(int)$r['dow']] : (string)$r['dow'];
-            $w = $maxDow ? intval(($r['cnt'] / $maxDow) * 100) : 0;
+            $w = $maxDow ? intval(((int)$r['cnt'] / $maxDow) * 100) : 0;
         ?>
           <div class="bar">
             <div class="label"><?php echo htmlspecialchars($name); ?></div>
@@ -323,3 +376,4 @@ if (isset($db) && $db instanceof PDO) {
     </div>
   </div>
 </body>
+</html>
