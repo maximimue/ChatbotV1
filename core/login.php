@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Gemeinsames Stylesheet aus dem Core einbinden -->
     <link rel="stylesheet" href="<?php echo htmlspecialchars($coreRelative); ?>/assets/css/style.css">
 </head>
+
 <body class="admin-dashboard admin-login-page">
     <div class="auth-shell">
         <div class="card auth-card">
