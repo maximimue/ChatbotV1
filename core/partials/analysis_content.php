@@ -79,17 +79,19 @@
 
     <div class="card span-12">
       <h2>Aktivitätsverlauf (letzte 30 Tage)</h2>
-      <table>
-        <thead><tr><th>Datum</th><th>Anfragen</th></tr></thead>
-        <tbody>
-          <?php foreach ($analysisData['byDay'] as $row): ?>
-            <tr>
-              <td><?php echo htmlspecialchars($row['d']); ?></td>
-              <td><?php echo htmlspecialchars($row['cnt']); ?></td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Datum</th><th>Anfragen</th></tr></thead>
+          <tbody>
+            <?php foreach ($analysisData['byDay'] as $row): ?>
+              <tr>
+                <td><?php echo htmlspecialchars($row['d']); ?></td>
+                <td><?php echo htmlspecialchars($row['cnt']); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="card span-6">
@@ -132,33 +134,38 @@
 
     <div class="card span-6">
       <h2>Häufig gestellte Fragen (Top 20)</h2>
-      <table>
-        <thead><tr><th>Frage</th><th>Anzahl</th></tr></thead>
-        <tbody>
-          <?php foreach ($analysisData['stats'] as $row): ?>
-            <tr>
-              <td><?php echo htmlspecialchars($row['question']); ?></td>
-              <td><?php echo htmlspecialchars($row['cnt']); ?></td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Frage</th><th>Anzahl</th></tr></thead>
+          <tbody>
+            <?php foreach ($analysisData['stats'] as $row): ?>
+              <tr>
+                <td><?php echo htmlspecialchars($row['question']); ?></td>
+                <td><?php echo htmlspecialchars($row['cnt']); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="card span-6">
       <h2>Letzte Anfragen</h2>
-      <table>
-        <thead><tr><th>Zeit</th><th>Frage</th><th>Antwort</th></tr></thead>
-        <tbody>
-          <?php foreach ($analysisData['logs'] as $row): ?>
-            <tr>
-              <td><?php echo htmlspecialchars($row['time']); ?></td>
-              <td><?php echo htmlspecialchars($row['question']); ?></td>
-              <td><?php echo nl2br(htmlspecialchars($row['answer'])); ?></td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Zeit</th><th>Frage</th><th>Antwort</th></tr></thead>
+          <tbody>
+            <?php foreach ($analysisData['logs'] as $row): ?>
+              <tr>
+                <td><?php echo htmlspecialchars($row['time']); ?></td>
+                <td><?php echo htmlspecialchars($row['question']); ?></td>
+                <td><?php echo nl2br(htmlspecialchars($row['answer'])); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

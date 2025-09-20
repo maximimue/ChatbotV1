@@ -204,7 +204,7 @@ body {
 
 .analytics-page .grid{
   display:grid; gap:16px;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 .analytics-page .card{
   background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px;
@@ -256,6 +256,9 @@ body {
 .analytics-page .muted{color:var(--muted)}
 .analytics-page .top-actions{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:8px;}
 
+.analytics-page .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -4px; padding:0 4px;}
+.analytics-page .table-scroll table{width:100%; min-width:520px;}
+
 /* Optional: generischer Button-Style, falls global nicht vorhanden */
 .analytics-page .button{
   display:inline-block; line-height:1; font-weight:600;
@@ -276,7 +279,9 @@ body {
 
 .admin-dashboard a { color:var(--accent); }
 
+
 .admin-shell { max-width:1800px; margin:0 auto; padding:32px 24px 48px; display:flex; flex-direction:column; gap:24px; }
+
 
 .admin-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
 .admin-header h1 { margin:0; font-size:28px; }
@@ -292,7 +297,9 @@ body {
 .admin-dashboard .button:hover { filter:brightness(1.05); }
 .admin-dashboard .button.ghost { background:transparent; color:var(--text); }
 
-.tab-nav { display:flex; gap:12px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+
+.tab-nav { display:flex; gap:12px; border-bottom:1px solid var(--border); padding-bottom:8px; flex-wrap:wrap; }
+
 .tab-link {
   padding:10px 16px; border-radius:10px 10px 0 0; text-decoration:none;
   color:var(--muted); border:1px solid transparent; font-weight:600;
@@ -411,5 +418,55 @@ body {
 
 .admin-login-page .form-actions .primary {
   width:100%;
+}
+
+@media (max-width: 960px) {
+  .admin-shell { padding:28px 18px 40px; }
+  .admin-header { flex-direction:column; align-items:flex-start; gap:12px; }
+  .admin-header .header-actions { width:100%; display:flex; justify-content:flex-start; }
+  .admin-header .header-actions .button { width:100%; justify-content:center; }
+  .analytics-page .grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .analytics-page .span-6,
+  .analytics-page .span-4 { grid-column: auto; }
+  .analytics-page .span-12 { grid-column: 1 / -1; }
+  .analytics-page .kpis { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard .grid.two-cols { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .admin-dashboard .form-actions { flex-direction:column; align-items:stretch; }
+  .admin-dashboard .form-actions .primary,
+  .admin-dashboard button.primary { width:100%; }
+  .admin-dashboard .button.add-account { width:100%; justify-content:center; }
+  .admin-dashboard .account-row { grid-template-columns:1fr; }
+  .tab-nav { gap:8px; }
+}
+
+@media (max-width: 640px) {
+  .admin-shell { padding:24px 16px 36px; }
+  .analytics-page { padding:20px 14px; }
+  .analytics-page h1 { font-size:24px; }
+  .analytics-page .top-actions { flex-direction:column; align-items:flex-start; gap:16px; }
+  .analytics-page .top-actions > div { width:100%; display:flex; flex-direction:column; gap:8px; }
+  .analytics-page .top-actions .button { width:100%; justify-content:center; }
+  .analytics-page .filters { flex-direction:column; align-items:stretch; }
+  .analytics-page .filters .field { width:100%; }
+  .analytics-page .filters input[type="date"],
+  .analytics-page .filters input[type="text"],
+  .analytics-page .filters input[type="number"],
+  .analytics-page .filters button,
+  .analytics-page .filters .button { min-width:0; width:100%; }
+  .analytics-page .kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .analytics-page .card { padding:18px; }
+  .analytics-page .table-scroll table { min-width:420px; }
+  .tab-link { flex:1 0 100%; text-align:center; }
+}
+
+@media (max-width: 480px) {
+  .analytics-page { padding:18px 12px; }
+  .analytics-page table { font-size:13px; }
+  .analytics-page .table-scroll table { min-width:360px; }
+  .admin-dashboard .card { padding:20px; }
+  .admin-login-page { padding:32px 12px; }
 }
 

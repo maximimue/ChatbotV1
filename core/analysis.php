@@ -45,6 +45,7 @@ $backLink = 'admin.php';
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Analyse der Anfragen</title>
     <!-- Gemeinsames Stylesheet aus dem Core einbinden -->
     <link rel="stylesheet" href="<?php echo htmlspecialchars($coreRelative); ?>/assets/css/style.css">

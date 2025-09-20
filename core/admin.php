@@ -276,6 +276,7 @@ $settingsFlash = admin_filter_flash($flashMessages, 'settings');
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Bereich</title>
     <link rel="stylesheet" href="<?php echo htmlspecialchars($coreRelative); ?>/assets/css/style.css">
 </head>
