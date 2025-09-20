@@ -7,22 +7,60 @@ session_start();
 
 // hotelspezifische Konfiguration laden
 require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/admin_accounts.php';
 
 // Relativer Pfad zum Core‑Verzeichnis. Wird vom Hotel‑Wrapper gesetzt. Fallback: '.'
 $coreRelative = $coreRelative ?? '.';
 
-// Wenn bereits eingeloggt, zur Admin‑Übersicht weiterleiten
-if (isset($_SESSION['admin']) && $_SESSION['admin'] === true) {
+// Session-Key für den Admin-Zugang bestimmen
+$adminSessionKey = $ADMIN_SESSION_KEY ?? 'admin';
+
+// Prüfen, ob bereits eine gültige Admin-Sitzung besteht
+$existingAuth = $_SESSION[$adminSessionKey] ?? null;
+$alreadyLoggedIn = is_array($existingAuth)
+    ? (!empty($existingAuth['authenticated']))
+    : ($existingAuth === true);
+if ($alreadyLoggedIn) {
     header('Location: admin.php');
     exit;
 }
 
+$accountsFile = admin_accounts_file_path($HOTEL_BASE_PATH ?? null);
+$availableAccounts = admin_load_accounts(
+    $accountsFile,
+    $ADMIN_USERS ?? null,
+    $ADMIN_USER ?? null,
+    $ADMIN_PASSWORD_HASH ?? null
+);
+
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-    if ($username === $ADMIN_USER && password_verify($password, $ADMIN_PASSWORD_HASH)) {
-        $_SESSION['admin'] = true;
+    $username = trim((string)($_POST['username'] ?? ''));
+    $password = (string)($_POST['password'] ?? '');
+    $authenticated = false;
+
+    foreach ($availableAccounts as $account) {
+        $storedUser = $account['username'];
+        $storedHash = $account['password_hash'];
+
+        if ($storedUser === '' || $storedHash === '') {
+            continue;
+        }
+
+        if (hash_equals($storedUser, $username) && password_verify($password, $storedHash)) {
+            $authenticated = true;
+            $selectedUser = $storedUser;
+            break;
+        }
+    }
+
+    if ($authenticated) {
+        session_regenerate_id(true);
+        $_SESSION[$adminSessionKey] = [
+            'authenticated' => true,
+            'username' => $selectedUser ?? $username,
+            'login_time' => time(),
+        ];
         header('Location: admin.php');
         exit;
     } else {
@@ -83,9 +121,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         <form method="post">
             <label>Benutzername</label>
-            <input type="text" name="username" required>
+            <input type="text" name="username" autocomplete="username" required autofocus>
             <label>Passwort</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" autocomplete="current-password" required>
             <button type="submit">Anmelden</button>
         </form>
     </div>
