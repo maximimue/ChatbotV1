@@ -173,58 +173,8 @@ if (isset($db) && $db instanceof PDO) {
     <title>Analyse der Anfragen</title>
     <!-- Gemeinsames Stylesheet aus dem Core einbinden -->
     <link rel="stylesheet" href="<?php echo htmlspecialchars($coreRelative); ?>/assets/css/style.css">
-    <style>
-    :root{
-      --bg:#0f1115; --card:#151924; --muted:#8a93a6; --text:#e5e7ee; --accent:#3b82f6; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --border:#232836;
-    }
-    *{box-sizing:border-box}
-    body{
-      padding:24px; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
-      background:var(--bg); color:var(--text);
-    }
-    h1{font-size:28px; margin:0 0 16px;}
-    h2{font-size:18px; margin:24px 0 12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
-    a{color:var(--accent); text-decoration:none}
-    a:hover{text-decoration:underline}
-    .grid{
-      display:grid; gap:16px;
-      grid-template-columns: repeat(12, 1fr);
-    }
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px;
-    }
-    .kpis{grid-column: span 12; display:grid; grid-template-columns: repeat(4,1fr); gap:12px;}
-    .kpi{background:linear-gradient(180deg, rgba(255,255,255,.03), transparent); border-radius:12px; border:1px solid var(--border); padding:14px;}
-    .kpi .label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
-    .kpi .value{font-size:24px; font-weight:600; margin-top:6px;}
-
-    .filters{grid-column: span 12; display:flex; gap:12px; flex-wrap:wrap; align-items:end; margin-bottom:4px;}
-    .filters .field{display:flex; flex-direction:column; gap:6px;}
-    .filters input[type="date"], .filters input[type="text"], .filters input[type="number"]{
-      background:#0b0e14; border:1px solid var(--border); color:var(--text); padding:8px 10px; border-radius:8px; min-width:200px;
-    }
-    .filters button, .filters .button{
-      padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--accent); color:white; cursor:pointer;
-    }
-    .filters .ghost{background:transparent; color:var(--text);}
-    .flex{display:flex; gap:16px; flex-wrap:wrap}
-    .span-6{grid-column: span 6;} .span-4{grid-column: span 4;} .span-12{grid-column: span 12;}
-
-    table{width:100%; border-collapse: collapse;}
-    th, td{border-bottom:1px solid var(--border); padding:10px; text-align:left;}
-    th{color:var(--muted); font-weight:600; text-transform:uppercase; font-size:12px; letter-spacing:.06em;}
-    tbody tr:hover{background:#101520;}
-
-    .bars{display:flex; flex-direction:column; gap:8px;}
-    .bar{display:flex; align-items:center; gap:12px;}
-    .bar .label{width:80px; color:var(--muted);}
-    .bar .track{flex:1; height:10px; background:#0b0e14; border:1px solid var(--border); border-radius:999px; overflow:hidden;}
-    .bar .fill{height:100%; background:var(--accent);}
-    .muted{color:var(--muted)}
-    .top-actions{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:8px;}
-    </style>
 </head>
-<body>
+<body class="analytics-page">
   <div class="top-actions">
     <h1>Analyse – <?php echo htmlspecialchars($HOTEL_NAME); ?></h1>
     <div>
