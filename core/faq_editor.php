@@ -13,7 +13,13 @@ require_once __DIR__ . '/init.php';
 // Relativer Pfad zum Core‑Verzeichnis (vom Hotel‑Wrapper gesetzt)
 $coreRelative = $coreRelative ?? '.';
 
-if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
+$adminSessionKey = $ADMIN_SESSION_KEY ?? 'admin';
+$sessionData = $_SESSION[$adminSessionKey] ?? null;
+$isAuthenticated = is_array($sessionData)
+    ? (!empty($sessionData['authenticated']))
+    : ($sessionData === true);
+
+if (!$isAuthenticated) {
     header('Location: login.php');
     exit;
 }

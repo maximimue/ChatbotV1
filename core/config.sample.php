@@ -27,3 +27,7 @@ $ADMIN_USER = 'admin';
 $ADMIN_PASSWORD_HASH = password_hash('changeme', PASSWORD_DEFAULT);
 
 // Hinweis: Diese Datei ist nur ein Beispiel. Für jedes Hotel sollten Sie eine eigene config.php mit angepassten Werten anlegen.
+
+// Optional: Eindeutiger Schlüssel für das Hotel (z. B. für Session-Namespace).
+// Wird er nicht gesetzt, nutzt das System automatisch den Namen des Hotelordners.
+// $HOTEL_KEY = 'mein-hotel';
