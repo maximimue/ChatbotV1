@@ -158,12 +158,12 @@ h1, h2, h3 {
 .privacy-box .privacy-content h2 {
   margin: 24px 0 8px;
   font-size: 18px;
-  color: #111827;
+  color: #c2c2c2ff;
 }
 
 .privacy-box .privacy-content p,
 .privacy-box .privacy-content ul,
 .privacy-box .privacy-content address {
-  color: #fff;
+  color: #e4e4e4ff;
   margin: 0 0 12px;
 }
