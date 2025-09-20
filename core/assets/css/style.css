@@ -279,7 +279,9 @@ body {
 
 .admin-dashboard a { color:var(--accent); }
 
-.admin-shell { max-width:1200px; margin:0 auto; padding:32px 24px 48px; display:flex; flex-direction:column; gap:24px; }
+
+.admin-shell { max-width:1800px; margin:0 auto; padding:32px 24px 48px; display:flex; flex-direction:column; gap:24px; }
+
 
 .admin-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
 .admin-header h1 { margin:0; font-size:28px; }
@@ -295,7 +297,9 @@ body {
 .admin-dashboard .button:hover { filter:brightness(1.05); }
 .admin-dashboard .button.ghost { background:transparent; color:var(--text); }
 
+
 .tab-nav { display:flex; gap:12px; border-bottom:1px solid var(--border); padding-bottom:8px; flex-wrap:wrap; }
+
 .tab-link {
   padding:10px 16px; border-radius:10px 10px 0 0; text-decoration:none;
   color:var(--muted); border:1px solid transparent; font-weight:600;
@@ -465,3 +469,4 @@ body {
   .admin-dashboard .card { padding:20px; }
   .admin-login-page { padding:32px 12px; }
 }
+
