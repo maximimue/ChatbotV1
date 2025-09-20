@@ -154,3 +154,16 @@ h1, h2, h3 {
   letter-spacing: .14em;      /* 100–200 → 0.10–0.20em, mittig gewählt */
   font-weight: 500;           /* Book/Medium */
 }
+
+.privacy-box .privacy-content h2 {
+  margin: 24px 0 8px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.privacy-box .privacy-content p,
+.privacy-box .privacy-content ul,
+.privacy-box .privacy-content address {
+  color: #fff;
+  margin: 0 0 12px;
+}
