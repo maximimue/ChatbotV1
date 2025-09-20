@@ -151,7 +151,6 @@
 
     <div class="card span-6">
       <h2>Letzte Anfragen</h2>
-
       <div class="table-scroll">
         <table>
           <thead><tr><th>Zeit</th><th>Frage</th><th>Antwort</th></tr></thead>

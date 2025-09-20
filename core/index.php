@@ -69,7 +69,7 @@ if (isset($LOGO_PATH) && file_exists($LOGO_PATH)) {
                 <input type="text" id="chat-input" placeholder="Ihre Frage..." autocomplete="off">
                 <div class="privacy">
                     <input type="checkbox" id="privacy-confirm">
-                    <label for="privacy-confirm">Ich habe die Datenschutzinformationen gelesen und akzeptiere sie.</label>
+                    <label for="privacy-confirm">Ich habe die <a href="<?php echo htmlspecialchars($privacyUrl ?? 'privacy.php'); ?>" target="_blank" rel="noopener">Datenschutzinformationen</a> gelesen und akzeptiere sie.</label>
                 </div>
                 <button type="submit" id="chat-send" disabled>Senden</button>
             </form>

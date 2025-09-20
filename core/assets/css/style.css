@@ -112,6 +112,16 @@ body {
   margin-right: 6px;
 }
 
+.chat-controls .privacy a {
+  color: #003366;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.chat-controls .privacy a:hover {
+  text-decoration: none;
+}
+
 .chat-controls button {
   padding: 8px;
   border: none;
@@ -141,6 +151,99 @@ body {
 
 .return-link:hover {
   background: rgba(0, 0, 0, 0.8);
+}
+
+.privacy-box {
+  max-width: 720px;
+  max-height: 90vh;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.privacy-box header {
+  margin-bottom: 18px;
+}
+
+.privacy-box .privacy-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+  line-height: 1.6;
+}
+
+.privacy-box .privacy-content h1 {
+  margin: 0 0 16px;
+  font-size: 26px;
+  color: #0f172a;
+}
+
+.privacy-box .privacy-content h2 {
+  margin: 24px 0 8px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.privacy-box .privacy-content p,
+.privacy-box .privacy-content ul,
+.privacy-box .privacy-content address {
+  color: #334155;
+  margin: 0 0 12px;
+}
+
+.privacy-box .privacy-content ul {
+  padding-left: 20px;
+}
+
+.privacy-box .privacy-content address {
+  font-style: normal;
+}
+
+.privacy-box .privacy-content a {
+  color: #0f4c81;
+  text-decoration: underline;
+}
+
+.privacy-box .privacy-content a:hover {
+  text-decoration: none;
+}
+
+.privacy-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.privacy-footer .privacy-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #003366;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.privacy-footer .privacy-back:hover {
+  background: #00264d;
+}
+
+@media (max-width: 600px) {
+  .privacy-box {
+    max-width: 100%;
+    max-height: 94vh;
+    padding: 18px;
+  }
+
+  .privacy-box .privacy-content h1 {
+    font-size: 22px;
+  }
+
+  .privacy-box .privacy-content h2 {
+    font-size: 17px;
+  }
 }
 
 /* Chatblasen-Grundlayout */
@@ -279,7 +382,6 @@ body {
 
 .admin-dashboard a { color:var(--accent); }
 
-
 .admin-shell { max-width:1800px; margin:0 auto; padding:32px 24px 48px; display:flex; flex-direction:column; gap:24px; }
 
 
@@ -296,7 +398,6 @@ body {
 }
 .admin-dashboard .button:hover { filter:brightness(1.05); }
 .admin-dashboard .button.ghost { background:transparent; color:var(--text); }
-
 
 .tab-nav { display:flex; gap:12px; border-bottom:1px solid var(--border); padding-bottom:8px; flex-wrap:wrap; }
 
@@ -469,4 +570,3 @@ body {
   .admin-dashboard .card { padding:20px; }
   .admin-login-page { padding:32px 12px; }
 }
-
