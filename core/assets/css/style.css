@@ -378,3 +378,38 @@ body {
 
 .admin-dashboard ul { margin:0 0 0 18px; }
 .admin-dashboard li { margin:4px 0; }
+
+.admin-login-page {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:48px 16px;
+}
+
+.admin-login-page .auth-shell {
+  width:100%;
+  max-width:420px;
+}
+
+.admin-login-page .auth-card {
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.admin-login-page .auth-card h1 {
+  margin:0;
+}
+
+.admin-login-page .auth-card .muted {
+  margin:0;
+}
+
+.admin-login-page .form-actions {
+  justify-content:stretch;
+}
+
+.admin-login-page .form-actions .primary {
+  width:100%;
+}
+

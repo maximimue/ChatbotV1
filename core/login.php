@@ -75,57 +75,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Admin Login</title>
     <!-- Gemeinsames Stylesheet aus dem Core einbinden -->
     <link rel="stylesheet" href="<?php echo htmlspecialchars($coreRelative); ?>/assets/css/style.css">
-    <style>
-    body {
-        background: #f5f5f5;
-    }
-    .login-wrapper {
-        max-width: 400px;
-        margin: 100px auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-    .login-wrapper input {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .login-wrapper button {
-        width: 100%;
-        padding: 8px;
-        background: #003366;
-        border: none;
-        border-radius: 4px;
-        color: #fff;
-        cursor: pointer;
-    }
-    .login-wrapper button:hover {
-        background: #004080;
-    }
-    .error {
-        color: red;
-        margin-bottom: 10px;
-    }
-    </style>
 </head>
-<body>
-    <div class="login-wrapper">
-        <h2>Admin Login</h2>
-        <?php if ($error): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        <form method="post">
-            <label>Benutzername</label>
-            <input type="text" name="username" autocomplete="username" required autofocus>
-            <label>Passwort</label>
-            <input type="password" name="password" autocomplete="current-password" required>
-            <button type="submit">Anmelden</button>
-        </form>
+
+<body class="admin-dashboard admin-login-page">
+    <div class="auth-shell">
+        <div class="card auth-card">
+            <h1>Admin Login</h1>
+            <?php if (!empty($HOTEL_NAME)): ?>
+                <p class="muted">Melden Sie sich an, um <?php echo htmlspecialchars($HOTEL_NAME); ?> zu verwalten.</p>
+            <?php else: ?>
+                <p class="muted">Bitte melden Sie sich mit Ihren Zugangsdaten an.</p>
+            <?php endif; ?>
+
+            <?php if ($error): ?>
+                <div class="flash error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+
+            <form method="post" class="stacked-form">
+                <label class="field">
+                    <span>Benutzername</span>
+                    <input type="text" name="username" autocomplete="username" required autofocus>
+                </label>
+                <label class="field">
+                    <span>Passwort</span>
+                    <input type="password" name="password" autocomplete="current-password" required>
+                </label>
+                <div class="form-actions">
+                    <button type="submit" class="primary">Anmelden</button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 </html>
+
