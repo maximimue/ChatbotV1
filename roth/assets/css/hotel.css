@@ -1,7 +1,7 @@
 :root{
-  --ah-ink: #123C48;           /* dunkles Blaugrün für Texte, Linien */
-  --ah-ink-80: rgba(18,60,72,.85);
-  --ah-ink-20: rgba(18,60,72,.2);
+  --ah-ink: #ae2b23;           /* dunkles Blaugrün für Texte, Linien */
+  --ah-ink-80: #ae2a23ce;
+  --ah-ink-20: #ae2a234a;
   --ah-brand: #ae2b23;         /* Hotel Roth Akzent/Brand (Teal) */
   --ah-bg: #FFFFFF;            /* Grundfläche */
   --ah-bubble-user: #ae2b23;   /* User-Bubble (negativ/weiß) */
