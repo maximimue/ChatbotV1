@@ -6,7 +6,7 @@
   --ah-bg: #FFFFFF;            /* Grundfläche */
   --ah-bubble-user: #ae2b23;   /* User-Bubble (negativ/weiß) */
   --ah-bubble-bot: #F1F6F7;    /* sehr hell, leicht bläulich */
-  --ah-header: #0D2C33;        /* sehr dunkler Header für weißes Logo */
+  --ah-header: #ae2b23;        /* sehr dunkler Header für weißes Logo */
   --ah-focus: #ae2b23;
 }
 
