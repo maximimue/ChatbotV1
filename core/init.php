@@ -77,3 +77,67 @@ if (isset($LOG_DB) && is_string($LOG_DB)) {
     // Kein Logging, wenn keine Datenbank definiert wurde
     $db = null;
 }
+
+if (!function_exists('chatbot_asset_url')) {
+    /**
+     * Ermittelt eine auslieferbare URL für konfigurierbare Assets.
+     *
+     * Unterstützt absolute Dateipfade, relative Pfade (bezogen auf den Hotelordner)
+     * sowie vollständige URLs.
+     *
+     * @param string|null $value
+     * @param string|null $hotelBasePath
+     * @return string|null
+     */
+    function chatbot_asset_url(?string $value, ?string $hotelBasePath = null): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        $lower = strtolower($value);
+        if (preg_match('#^[a-z][a-z0-9+.-]*://#i', $value) || strpos($value, '//') === 0 || strpos($lower, 'data:') === 0) {
+            return $value;
+        }
+
+        if ($value[0] === '/') {
+            return $value;
+        }
+
+        $normalizedValue = str_replace('\\', '/', $value);
+
+        if ($hotelBasePath) {
+            $normalizedBase = str_replace('\\', '/', rtrim($hotelBasePath, '/\\')) . '/';
+
+            if (strpos($normalizedValue, $normalizedBase) === 0) {
+                $relative = substr($normalizedValue, strlen($normalizedBase));
+                return $relative === '' ? basename($normalizedValue) : $relative;
+            }
+
+            $combined = $normalizedBase . ltrim($normalizedValue, '/');
+            if (file_exists($combined)) {
+                $relative = ltrim(str_replace('\\', '/', $normalizedValue), '/');
+                return $relative === '' ? basename($normalizedValue) : $relative;
+            }
+        }
+
+        if (file_exists($value)) {
+            $normalizedFull = str_replace('\\', '/', $value);
+            if ($hotelBasePath) {
+                $normalizedBase = str_replace('\\', '/', rtrim($hotelBasePath, '/\\')) . '/';
+                if (strpos($normalizedFull, $normalizedBase) === 0) {
+                    $relative = substr($normalizedFull, strlen($normalizedBase));
+                    return $relative === '' ? basename($normalizedFull) : $relative;
+                }
+            }
+            return basename($normalizedFull);
+        }
+
+        return $value;
+    }
+}

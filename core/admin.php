@@ -111,10 +111,21 @@ if ($faqPath && is_readable($faqPath)) {
 $faqError = '';
 
 $settingsValues = [
-    'HOTEL_NAME' => isset($HOTEL_NAME) ? (string)$HOTEL_NAME : '',
-    'HOTEL_URL'  => isset($HOTEL_URL) ? (string)$HOTEL_URL : '',
-    'API_URL'    => isset($API_URL) ? (string)$API_URL : '',
-    'BOT_NAME'   => isset($BOT_NAME) ? (string)$BOT_NAME : '',
+    'HOTEL_NAME'                => isset($HOTEL_NAME) ? (string)$HOTEL_NAME : '',
+    'HOTEL_URL'                 => isset($HOTEL_URL) ? (string)$HOTEL_URL : '',
+    'BOT_NAME'                  => isset($BOT_NAME) ? (string)$BOT_NAME : 'Max',
+    'LOGO_PATH'                 => isset($LOGO_PATH) ? (string)$LOGO_PATH : '',
+    'BACKGROUND_IMAGE_URL'      => isset($BACKGROUND_IMAGE_URL) ? (string)$BACKGROUND_IMAGE_URL : '',
+    'CHAT_BACKGROUND_COLOR'     => isset($CHAT_BACKGROUND_COLOR) ? (string)$CHAT_BACKGROUND_COLOR : '#f0f0f0',
+    'CHAT_BOX_BACKGROUND_COLOR' => isset($CHAT_BOX_BACKGROUND_COLOR) ? (string)$CHAT_BOX_BACKGROUND_COLOR : '#808080',
+    'CHAT_PRIMARY_COLOR'        => isset($CHAT_PRIMARY_COLOR) ? (string)$CHAT_PRIMARY_COLOR : '#003366',
+    'CHAT_PRIMARY_TEXT_COLOR'   => isset($CHAT_PRIMARY_TEXT_COLOR) ? (string)$CHAT_PRIMARY_TEXT_COLOR : '#ffffff',
+    'CHAT_USER_BUBBLE_COLOR'    => isset($CHAT_USER_BUBBLE_COLOR) ? (string)$CHAT_USER_BUBBLE_COLOR : '#0078d7',
+    'CHAT_USER_TEXT_COLOR'      => isset($CHAT_USER_TEXT_COLOR) ? (string)$CHAT_USER_TEXT_COLOR : '#ffffff',
+    'CHAT_BOT_BUBBLE_COLOR'     => isset($CHAT_BOT_BUBBLE_COLOR) ? (string)$CHAT_BOT_BUBBLE_COLOR : '#f0f0f0',
+    'CHAT_BOT_TEXT_COLOR'       => isset($CHAT_BOT_TEXT_COLOR) ? (string)$CHAT_BOT_TEXT_COLOR : '#000000',
+    'CHAT_LINK_COLOR'           => isset($CHAT_LINK_COLOR) ? (string)$CHAT_LINK_COLOR : '#003366',
+    'PROMPT_EXTRA'              => isset($PROMPT_EXTRA) ? (string)$PROMPT_EXTRA : '',
 ];
 $settingsErrors = [];
 
@@ -354,12 +365,63 @@ $settingsFlash = admin_filter_flash($flashMessages, 'settings');
                 <input type="url" name="settings[HOTEL_URL]" value="<?php echo htmlspecialchars($settingsValues['HOTEL_URL']); ?>" placeholder="https://...">
               </label>
               <label class="field">
-                <span>API-Endpunkt</span>
-                <input type="url" name="settings[API_URL]" value="<?php echo htmlspecialchars($settingsValues['API_URL']); ?>" placeholder="https://...">
-              </label>
-              <label class="field">
                 <span>Bot-Name</span>
                 <input type="text" name="settings[BOT_NAME]" value="<?php echo htmlspecialchars($settingsValues['BOT_NAME']); ?>">
+              </label>
+              <label class="field">
+                <span>Logo-Pfad</span>
+                <input type="text" name="settings[LOGO_PATH]" value="<?php echo htmlspecialchars($settingsValues['LOGO_PATH']); ?>" placeholder="logo.png oder URL">
+              </label>
+            </div>
+            <label class="field">
+              <span>Zusätzliche Prompt-Anweisungen</span>
+              <textarea name="settings[PROMPT_EXTRA]" spellcheck="false"><?php echo htmlspecialchars($settingsValues['PROMPT_EXTRA']); ?></textarea>
+            </label>
+          </div>
+
+          <div class="card">
+            <h2>Design &amp; Branding</h2>
+            <p class="muted">Steuern Sie Hintergrundbild und Farbwerte. Relative Pfade beziehen sich auf den Hotelordner.</p>
+            <div class="grid two-cols">
+              <label class="field">
+                <span>Hintergrundbild (optional)</span>
+                <input type="text" name="settings[BACKGROUND_IMAGE_URL]" value="<?php echo htmlspecialchars($settingsValues['BACKGROUND_IMAGE_URL']); ?>" placeholder="assets/images/background.jpg">
+              </label>
+              <label class="field">
+                <span>Chat-Hintergrundfarbe</span>
+                <input type="color" name="settings[CHAT_BACKGROUND_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BACKGROUND_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Chatbox-Farbe</span>
+                <input type="color" name="settings[CHAT_BOX_BACKGROUND_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BOX_BACKGROUND_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Primärfarbe (Buttons &amp; Links)</span>
+                <input type="color" name="settings[CHAT_PRIMARY_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_PRIMARY_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Primäre Textfarbe</span>
+                <input type="color" name="settings[CHAT_PRIMARY_TEXT_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_PRIMARY_TEXT_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Benutzer-Blasenfarbe</span>
+                <input type="color" name="settings[CHAT_USER_BUBBLE_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_USER_BUBBLE_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Benutzer-Textfarbe</span>
+                <input type="color" name="settings[CHAT_USER_TEXT_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_USER_TEXT_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Bot-Blasenfarbe</span>
+                <input type="color" name="settings[CHAT_BOT_BUBBLE_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BOT_BUBBLE_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Bot-Textfarbe</span>
+                <input type="color" name="settings[CHAT_BOT_TEXT_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BOT_TEXT_COLOR']); ?>">
+              </label>
+              <label class="field">
+                <span>Linkfarbe</span>
+                <input type="color" name="settings[CHAT_LINK_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_LINK_COLOR']); ?>">
               </label>
             </div>
           </div>

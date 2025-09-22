@@ -6,16 +6,26 @@
  * CSS‑Dateien eingebunden oder dieser Datei angehängt werden.
  */
 
+:root {
+  --chat-background-color: #f0f0f0;
+  --chat-box-background-color: #808080;
+  --chat-primary-color: #003366;
+  --chat-primary-text-color: #ffffff;
+  --chat-link-color: var(--chat-primary-color);
+  --chat-user-bubble-color: #0078d7;
+  --chat-user-text-color: #ffffff;
+  --chat-bot-bubble-color: #f0f0f0;
+  --chat-bot-text-color: #000000;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Hintergrundbild – kann in der Konfiguration durch ein anderes Bild ersetzt werden */
 body {
-  background: #f0f0f0;
-  /* Ein optionales Hintergrundbild kann über CSS oder im HTML gesetzt werden */
+  background: var(--chat-background-color);
   background-size: cover;
   background-position: center;
 }
@@ -40,7 +50,7 @@ body {
   max-width: 500px;
   height: 100%;
   max-height: 80vh;
-  background: grey;
+  background: var(--chat-box-background-color);
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
   padding: 20px;
@@ -76,20 +86,21 @@ body {
 
 .message.user {
   text-align: right;
-  color: #003366;
+  color: var(--chat-primary-color);
 }
 
 .message.bot {
   text-align: left;
-  color: #333;
+  color: var(--chat-bot-text-color);
 }
 
 #typing-indicator .bubble {
   font-style: italic;
-  color: #666;
-  background: #f0f0f0;
+  color: var(--chat-bot-text-color);
+  background: var(--chat-bot-bubble-color);
   border-radius: 14px;
   padding: 8px 12px;
+  opacity: 0.85;
 }
 
 .chat-controls input[type="text"] {
@@ -113,7 +124,7 @@ body {
 }
 
 .chat-controls .privacy a {
-  color: #003366;
+  color: var(--chat-primary-color);
   font-weight: 600;
   text-decoration: underline;
 }
@@ -126,8 +137,8 @@ body {
   padding: 8px;
   border: none;
   border-radius: 4px;
-  background: #003366;
-  color: #fff;
+  background: var(--chat-primary-color);
+  color: var(--chat-primary-text-color);
   cursor: pointer;
   font-size: 1em;
 }
@@ -199,7 +210,7 @@ body {
 }
 
 .privacy-box .privacy-content a {
-  color: #0f4c81;
+  color: var(--chat-link-color);
   text-decoration: underline;
 }
 
@@ -217,8 +228,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #003366;
-  color: #ffffff;
+  background: var(--chat-primary-color);
+  color: var(--chat-primary-text-color);
   padding: 10px 18px;
   border-radius: 6px;
   text-decoration: none;
@@ -227,7 +238,7 @@ body {
 }
 
 .privacy-footer .privacy-back:hover {
-  background: #00264d;
+  filter: brightness(0.9);
 }
 
 @media (max-width: 600px) {
@@ -272,8 +283,8 @@ body {
   justify-content: flex-start;
 }
 .msg.bot .bubble {
-  background: #f0f0f0;
-  color: #000;
+  background: var(--chat-bot-bubble-color);
+  color: var(--chat-bot-text-color);
   border-top-left-radius: 0;
 }
 
@@ -282,8 +293,8 @@ body {
   justify-content: flex-end;
 }
 .msg.user .bubble {
-  background: #0078d7;
-  color: #fff;
+  background: var(--chat-user-bubble-color);
+  color: var(--chat-user-text-color);
   border-top-right-radius: 0;
   text-align: right;
 }
@@ -431,7 +442,8 @@ body {
 .stacked-form textarea,
 .stacked-form input[type="text"],
 .stacked-form input[type="url"],
-.stacked-form input[type="password"] {
+.stacked-form input[type="password"],
+.stacked-form input[type="color"] {
   width:100%;
   background:#0b0e14;
   border:1px solid var(--border);
@@ -442,6 +454,7 @@ body {
   box-sizing:border-box;
 }
 .stacked-form textarea { min-height:320px; font-family:monospace; line-height:1.5; }
+.stacked-form input[type="color"] { padding:0; min-height:42px; }
 
 .admin-dashboard .grid.two-cols {
   display:grid; gap:16px;

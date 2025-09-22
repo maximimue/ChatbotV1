@@ -12,10 +12,7 @@ require_once __DIR__ . '/init.php';
 
 $coreRelative = $coreRelative ?? '..';
 
-$logoSrc = null;
-if (isset($LOGO_PATH) && file_exists($LOGO_PATH)) {
-    $logoSrc = basename($LOGO_PATH);
-}
+$logoSrc = chatbot_asset_url($LOGO_PATH ?? null, $HOTEL_BASE_PATH ?? null);
 
 $chatReturnUrl = $chatReturnUrl ?? 'index.php';
 
@@ -31,6 +28,7 @@ $chatReturnUrl = $chatReturnUrl ?? 'index.php';
     if (isset($hotelCssUrl) && $hotelCssUrl) {
         echo '<link rel="stylesheet" href="' . htmlspecialchars($hotelCssUrl) . '">';
     }
+    include __DIR__ . '/partials/style_overrides.php';
     ?>
 </head>
 <body class="privacy-page">
