@@ -15,16 +15,7 @@ require_once __DIR__ . '/init.php';
 $coreRelative = $coreRelative ?? '..';
 
 // Ermitteln des relativen Pfads zum Logo innerhalb des Webservers
-$logoSrc = null;
-if (isset($LOGO_PATH) && file_exists($LOGO_PATH)) {
-    // basename() sorgt dafür, dass nur der Dateiname im <img> verwendet wird
-    $logoSrc = basename($LOGO_PATH);
-}
-
-// Hintergrund optional setzen: Falls im Hotellogo eine zusätzliche Bilddatei
-// vorhanden sein sollte, kann sie in CSS oder per Inline‑Style referenziert
-// werden. Hier laden wir kein spezielles Bild, sondern überlassen es dem
-// Benutzer, dies anzupassen.
+$logoSrc = chatbot_asset_url($LOGO_PATH ?? null, $HOTEL_BASE_PATH ?? null);
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -46,13 +37,8 @@ if (isset($LOGO_PATH) && file_exists($LOGO_PATH)) {
     if (isset($hotelCssUrl) && $hotelCssUrl) {
         echo '<link rel="stylesheet" href="' . htmlspecialchars($hotelCssUrl) . '">';
     }
+    include __DIR__ . '/partials/style_overrides.php';
     ?>
-    <style>
-    /* Optionaler Inline‑Hintergrund: kann in der hotelspezifischen config überschrieben werden */
-    body {
-        background-image: url('<?php echo htmlspecialchars($coreRelative); ?>/assets/images/background.jpg');
-    }
-    </style>
 </head>
 <body>
     <div class="chat-overlay">
