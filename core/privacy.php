@@ -11,6 +11,7 @@
 require_once __DIR__ . '/init.php';
 
 $coreRelative = $coreRelative ?? '..';
+$hotelCssUrl = $hotelCssUrl ?? ($HOTEL_CSS_URL ?? null);
 
 $logoSrc = null;
 if (isset($LOGO_PATH) && file_exists($LOGO_PATH)) {

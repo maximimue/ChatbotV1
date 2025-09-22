@@ -14,6 +14,10 @@ require_once __DIR__ . '/init.php';
 // Hotel‑Wrapper (index.php) gesetzt. Fallback: '..' falls nicht gesetzt.
 $coreRelative = $coreRelative ?? '..';
 
+// Hotelspezifisches Stylesheet aus der Konfiguration übernehmen, falls der
+// Wrapper keine eigene Variable gesetzt hat.
+$hotelCssUrl = $hotelCssUrl ?? ($HOTEL_CSS_URL ?? null);
+
 // Ermitteln des relativen Pfads zum Logo innerhalb des Webservers
 $logoSrc = null;
 if (isset($LOGO_PATH) && file_exists($LOGO_PATH)) {
