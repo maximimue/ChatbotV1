@@ -24,6 +24,10 @@ foreach ($colorMap as $configKey => $cssVar) {
 $backgroundImageUrl = null;
 if (isset($BACKGROUND_IMAGE_URL) && $BACKGROUND_IMAGE_URL !== '') {
     $backgroundImageUrl = chatbot_asset_url((string)$BACKGROUND_IMAGE_URL, $HOTEL_BASE_PATH ?? null);
+    if ($backgroundImageUrl) {
+        $escapedUrl = htmlspecialchars($backgroundImageUrl, ENT_QUOTES);
+        $styleVariables[] = "--chat-background-image: url('{$escapedUrl}')";
+    }
 }
 
 if (!empty($styleVariables) || $backgroundImageUrl) {
@@ -31,13 +35,9 @@ if (!empty($styleVariables) || $backgroundImageUrl) {
     if (!empty($styleVariables)) {
         echo ":root {\n";
         foreach ($styleVariables as $line) {
-            echo '    ' . $line . "\n";
+            echo '    ' . $line . ";\n";
         }
         echo "}\n";
-    }
-    if ($backgroundImageUrl) {
-        $escaped = htmlspecialchars($backgroundImageUrl, ENT_QUOTES);
-        echo "body { background-image: url('{$escaped}'); }\n";
     }
     echo "</style>\n";
 }
