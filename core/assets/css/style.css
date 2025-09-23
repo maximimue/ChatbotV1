@@ -41,6 +41,7 @@ body {
 }
 
 html {
+
   background-color: var(--chat-background-color);
   background-image: var(--chat-background-image, var(--hotel-background-image, none));
   background-size: cover;
