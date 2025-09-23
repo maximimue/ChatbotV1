@@ -12,8 +12,11 @@
 
 :root {
   --hotel-background-image: url('../images/background.jpg');
+  --chat-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
   --chat-background-color: #2D393B;
   --chat-box-background-color: rgb(45, 57, 59);
+  --chat-log-background-color: var(--chat-primary-text-color);
+  --hotel-log-background-color: var(--chat-log-background-color);
   --chat-primary-color: #2D393B;
   --chat-primary-text-color: #ffffff;
   --chat-link-color: var(--chat-primary-color);
@@ -21,183 +24,20 @@
   --chat-user-text-color: #ffffff;
   --chat-bot-bubble-color: #F3F5F5;
   --chat-bot-text-color: #2D393B;
-  --hotel-border-color: color-mix(in srgb, var(--chat-bot-text-color) 20%, transparent);
-  --hotel-muted-text-color: color-mix(in srgb, var(--chat-bot-text-color) 80%, transparent);
-  --hotel-return-link-background: color-mix(in srgb, var(--chat-primary-color) 85%, transparent);
-  --hotel-disabled-button-background: color-mix(in srgb, var(--chat-primary-color) 30%, #fff 70%);
+  --chat-border-color: color-mix(in srgb, var(--chat-bot-text-color) 20%, transparent);
+  --hotel-border-color: var(--chat-border-color);
+  --chat-muted-text-color: color-mix(in srgb, var(--chat-bot-text-color) 80%, transparent);
+  --hotel-muted-text-color: var(--chat-muted-text-color);
+  --chat-button-background-color: var(--chat-primary-text-color);
+  --hotel-button-background-color: var(--chat-button-background-color);
+  --chat-button-text-color: var(--chat-bot-text-color);
+  --hotel-button-text-color: var(--chat-button-text-color);
+  --chat-button-border-color: transparent;
+  --hotel-button-border-color: var(--chat-button-border-color);
+  --chat-disabled-button-background: color-mix(in srgb, var(--chat-primary-color) 30%, #fff 70%);
+  --hotel-disabled-button-background: var(--chat-disabled-button-background);
+  --chat-return-link-background: color-mix(in srgb, var(--chat-primary-color) 85%, transparent);
+  --hotel-return-link-background: var(--chat-return-link-background);
+  --chat-input-focus-ring: color-mix(in srgb, var(--chat-primary-color) 30%, transparent);
 }
 
-html,
-body {
-  font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: var(--chat-bot-text-color);
-  background-color: var(--chat-background-color);
-  background-image: var(--chat-background-image, var(--hotel-background-image));
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-/* Grundlayout */
-.chat-box {
-  background: var(--chat-box-background-color);
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-  border: 1px solid var(--hotel-border-color);
-}
-
-/* Header mit Logo + optionalem Claim */
-.chat-box header {
-  padding: 6px 0 10px;
-  border-bottom: 1px solid var(--hotel-border-color);
-  margin-bottom: 10px;
-}
-
-.chat-box header img {
-  max-width: 220px;
-  height: auto;
-  display: block;
-  margin: 0 auto 6px auto;
-}
-
-.brand-claim {
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-align: center;
-  color: var(--hotel-muted-text-color);
-  margin-top: 2px;
-}
-
-/* Chatbereich */
-#chat-log {
-  background: var(--chat-primary-text-color);
-  border: 1px solid var(--hotel-border-color);
-  border-radius: 10px;
-}
-
-/* Bubbles – links (Bot) / rechts (User) */
-.msg {
-  display: flex;
-  width: 100%;
-}
-
-.msg .bubble {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  font-size: 14.5px;
-  letter-spacing: 0.02em;
-}
-
-.msg.bot {
-  justify-content: flex-start;
-}
-
-.msg.bot .bubble {
-  background: var(--chat-bot-bubble-color);
-  color: var(--chat-bot-text-color);
-  border-top-left-radius: 4px;
-  border: 1px solid var(--hotel-border-color);
-}
-
-.msg.user {
-  justify-content: flex-end;
-}
-
-.msg.user .bubble {
-  background: var(--chat-user-bubble-color);
-  color: var(--chat-user-text-color);
-  border-top-right-radius: 4px;
-  letter-spacing: 0.03em;
-  text-align: right;
-  border: 1px solid var(--chat-primary-color);
-}
-
-/* Labels */
-.msg .bubble strong {
-  letter-spacing: 0.05em;
-  font-weight: 500;
-  display: inline-block;
-  margin-right: 0.35em;
-  opacity: 0.9;
-}
-
-/* Eingabe + Buttons */
-.chat-controls input[type="text"] {
-  border: 1px solid var(--hotel-border-color);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 15px;
-  letter-spacing: 0.02em;
-}
-
-.chat-controls input[type="text"]:focus {
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--chat-primary-color) 30%, transparent);
-  border-color: var(--chat-primary-color);
-}
-
-.chat-controls .privacy {
-  color: var(--chat-primary-text-color);
-}
-
-.chat-controls button {
-  background: var(--chat-primary-text-color);
-  color: var(--chat-bot-text-color);
-  border-radius: 10px;
-  padding: 10px 14px;
-  letter-spacing: 0.06em;
-  border: 1px solid transparent;
-}
-
-.chat-controls button:disabled {
-  background: var(--hotel-disabled-button-background);
-  color: var(--chat-primary-text-color);
-}
-
-/* Sekundäre Elemente */
-.return-link {
-  background: var(--hotel-return-link-background);
-  border: 1px solid var(--chat-primary-color);
-  color: var(--chat-primary-text-color);
-}
-
-/* Kleintypografie im Log */
-#chat-log a {
-  color: var(--chat-link-color);
-  text-decoration-thickness: 1px;
-}
-
-#chat-log ul {
-  padding-left: 1.2em;
-}
-
-/* Headline-Typo */
-h1,
-h2,
-h3 {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-weight: 500;
-}
-
-.privacy-box .privacy-content h1 {
-  margin: 0 0 16px;
-  font-size: 26px;
-  color: var(--chat-primary-text-color);
-}
-
-.privacy-box .privacy-content h2 {
-  margin: 24px 0 8px;
-  font-size: 18px;
-  color: color-mix(in srgb, var(--chat-primary-text-color) 70%, transparent);
-}
-
-.privacy-box .privacy-content p,
-.privacy-box .privacy-content ul,
-.privacy-box .privacy-content address {
-  color: color-mix(in srgb, var(--chat-primary-text-color) 85%, transparent);
-  margin: 0 0 12px;
-}

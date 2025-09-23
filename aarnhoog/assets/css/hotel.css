@@ -1,11 +1,11 @@
 /*
  * AARNHOOG – hotelspezifische Stile
- * Bindet das Corporate-Design in die Chatoberfläche ein, ohne die
- * gemeinsamen Theme-Variablen zu überschreiben.
+
  */
 
 :root {
   --hotel-background-image: url('../images/background.jpg');
+  --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
   --chat-background-color: #ffffff;
   --chat-box-background-color: #ffffff;
   --chat-primary-color: #0F6E8F;
@@ -15,163 +15,17 @@
   --chat-user-text-color: #ffffff;
   --chat-bot-bubble-color: #F1F6F7;
   --chat-bot-text-color: #123C48;
-  --hotel-border-color: color-mix(in srgb, var(--chat-bot-text-color) 20%, transparent);
-  --hotel-muted-text-color: color-mix(in srgb, var(--chat-bot-text-color) 85%, transparent);
-  --hotel-header-background: color-mix(in srgb, var(--chat-primary-color) 35%, #000 65%);
-  --hotel-button-border-color: color-mix(in srgb, var(--chat-primary-color) 70%, #000 30%);
-  --hotel-disabled-button-background: color-mix(in srgb, var(--chat-primary-color) 25%, #fff 75%);
-  --hotel-return-link-background: color-mix(in srgb, var(--chat-primary-color) 80%, #000 20%);
-}
-
-html,
-body {
-  font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: var(--chat-bot-text-color);
-  background-color: var(--chat-background-color);
-  background-image: var(--chat-background-image, var(--hotel-background-image));
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-/* Chat-Container */
-.chat-box {
-  background: var(--chat-box-background-color);
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--hotel-border-color);
-  overflow: hidden;
-}
-
-/* Header mit dunklem Balken für das Logo */
-.chat-box header {
-  background: var(--hotel-header-background);
-  color: var(--chat-primary-text-color);
-  padding: 14px 0 12px;
-  border-bottom: 1px solid color-mix(in srgb, var(--chat-primary-text-color) 12%, transparent);
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.chat-box header img {
-  max-width: 210px;
-  height: auto;
-  display: inline-block;
-}
-
-.brand-claim {
-  color: color-mix(in srgb, var(--chat-primary-text-color) 90%, transparent);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-/* Chatbereich */
-#chat-log {
-  background: var(--chat-box-background-color);
-  border: 1px solid var(--hotel-border-color);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-}
-
-/* Bubbles – Bot links, User rechts */
-.msg {
-  display: flex;
-  width: 100%;
-}
-
-.msg .bubble {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  font-size: 15px;
-  letter-spacing: 0.01em;
-}
-
-/* Bot (links, positiv) */
-.msg.bot {
-  justify-content: flex-start;
-}
-
-.msg.bot .bubble {
-  background: var(--chat-bot-bubble-color);
-  color: var(--chat-bot-text-color);
-  border-top-left-radius: 4px;
-  border: 1px solid var(--hotel-border-color);
-}
-
-/* User (rechts, negativ) */
-.msg.user {
-  justify-content: flex-end;
-}
-
-.msg.user .bubble {
-  background: var(--chat-user-bubble-color);
-  color: var(--chat-user-text-color);
-  border-top-right-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--chat-user-bubble-color) 70%, #000 30%);
-  text-align: right;
-}
-
-/* Labels „Max:“ / „Du:“ zurückhaltend */
-.msg .bubble strong {
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  opacity: 0.95;
-  margin-right: 0.35em;
-}
-
-/* Eingabe & Buttons */
-.chat-controls input[type="text"] {
-  border: 1px solid var(--hotel-border-color);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 15px;
-}
-
-.chat-controls input[type="text"]:focus {
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--chat-primary-color) 25%, transparent);
-  border-color: var(--chat-primary-color);
-}
-
-.chat-controls .privacy {
-  color: var(--hotel-muted-text-color);
-}
-
-.chat-controls button {
-  background: var(--chat-primary-color);
-  color: var(--chat-primary-text-color);
-  border-radius: 10px;
-  padding: 10px 14px;
-  letter-spacing: 0.03em;
-  border: 1px solid var(--hotel-button-border-color);
-}
-
-.chat-controls button:disabled {
-  background: var(--hotel-disabled-button-background);
-  border-color: var(--hotel-disabled-button-background);
-}
-
-/* „Zurück zur Website“-Button */
-.return-link {
-  background: var(--hotel-return-link-background);
-  border: 1px solid var(--hotel-button-border-color);
-  color: var(--chat-primary-text-color);
-}
-
-/* Links im Chat */
-#chat-log a {
-  color: var(--chat-link-color);
-  text-decoration-thickness: 1px;
-}
-
-#chat-log ul {
-  padding-left: 1.2em;
+  --chat-border-color: color-mix(in srgb, var(--chat-bot-text-color) 20%, transparent);
+  --hotel-border-color: var(--chat-border-color);
+  --chat-muted-text-color: color-mix(in srgb, var(--chat-bot-text-color) 85%, transparent);
+  --hotel-muted-text-color: var(--chat-muted-text-color);
+  --chat-header-background: color-mix(in srgb, var(--chat-primary-color) 35%, #000 65%);
+  --hotel-header-background: var(--chat-header-background);
+  --chat-button-border-color: color-mix(in srgb, var(--chat-primary-color) 70%, #000 30%);
+  --hotel-button-border-color: var(--chat-button-border-color);
+  --chat-disabled-button-background: color-mix(in srgb, var(--chat-primary-color) 25%, #fff 75%);
+  --hotel-disabled-button-background: var(--chat-disabled-button-background);
+  --chat-return-link-background: color-mix(in srgb, var(--chat-primary-color) 80%, #000 20%);
+  --hotel-return-link-background: var(--chat-return-link-background);
+  --chat-input-focus-ring: color-mix(in srgb, var(--chat-primary-color) 25%, transparent);
 }

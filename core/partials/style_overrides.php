@@ -35,13 +35,9 @@ if (!empty($styleVariables) || $backgroundImageUrl) {
     if (!empty($styleVariables)) {
         echo ":root {\n";
         foreach ($styleVariables as $line) {
-            echo '    ' . $line . "\n";
+            echo '    ' . $line . ";\n";
         }
         echo "}\n";
-    }
-    if ($backgroundImageUrl) {
-        $escaped = htmlspecialchars($backgroundImageUrl, ENT_QUOTES);
-        echo "body { background-image: url('{$escaped}'); }\n";
     }
     echo "</style>\n";
 }
