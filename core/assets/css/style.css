@@ -40,14 +40,19 @@ body {
   margin: 0;
 }
 
-body {
-  font-family: var(--chat-font-family);
+html {
+
   background-color: var(--chat-background-color);
   background-image: var(--chat-background-image, var(--hotel-background-image, none));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+body {
+  font-family: var(--chat-font-family);
+  background-color: transparent;
   color: var(--chat-bot-text-color);
   display: flex;
   flex-direction: column;
