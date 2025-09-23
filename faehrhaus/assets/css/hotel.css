@@ -14,143 +14,98 @@
   font-style: normal;
   font-display: swap;
 }
+
 :root {
   --fh-ink: #2D393B;            /* Primärschrift-/Linienfarbe */
   --fh-ink-80: rgba(45,57,59,.8);
   --fh-ink-20: rgba(45,57,59,.2);
   --fh-accent: #2D393B;         /* Akzent bleibt tonal */
-  --fh-bg: rgb(45,57,59);             /* grauer Hintergrund */
+  --fh-bg: rgb(45,57,59);       /* grauer Hintergrund */
   --fh-bubble-user: #2D393B;    /* User-Blase dunkel (negativ, weiße Schrift) */
   --fh-bubble-bot: #F3F5F5;     /* Sehr helles Grau mit leichter Blaugrün-Note */
   --fh-focus: #2D393B;
-}
 
-html, body {
-  font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: var(--fh-ink);
-  background: url('../images/background.jpg') no-repeat center center fixed !important;
-  background-size: cover !important;
-}
+  --chat-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --chat-text-color: var(--fh-ink);
+  --chat-body-background: url('../images/background.jpg') no-repeat center center fixed;
+  --chat-body-background-size: cover;
+  --chat-body-background-position: center;
+  --chat-body-background-repeat: no-repeat;
+  --chat-body-background-attachment: fixed;
 
-/* Grundlayout (Core überschreiben) */
-.chat-box {
-  background: var(--fh-bg);
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.12);
-  border: 1px solid var(--fh-ink-20);
-}
+  --chat-box-background: var(--fh-bg);
+  --chat-box-border-radius: 14px;
+  --chat-box-border: 1px solid var(--fh-ink-20);
+  --chat-box-box-shadow: 0 8px 28px rgba(0,0,0,.12);
 
-/* Header mit Logo + optionalem Claim */
-.chat-box header {
-  padding: 6px 0 10px;
-  border-bottom: 1px solid var(--fh-ink-20);
-  margin-bottom: 10px;
-}
-.chat-box header img {
-  max-width: 220px;
-  height: auto;
-  display: block;
-  margin: 0 auto 6px auto;
-  filter: none; /* Logo unverfälscht anzeigen */
-}
-.brand-claim {
-  font-size: 10px;
-  letter-spacing: .18em;      /* Headlines 100–200 → 0.10–0.20em */
-  text-align: center;
-  color: var(--fh-ink-80);
-  margin-top: 2px;
-}
+  --chat-header-padding: 6px 0 10px;
+  --chat-header-border-bottom: 1px solid var(--fh-ink-20);
+  --chat-header-text-align: center;
+  --chat-header-logo-max-width: 220px;
+  --chat-header-logo-display: block;
+  --chat-header-logo-margin: 0 auto 6px auto;
 
-/* Chatbereich */
-#chat-log {
-  background: #fff;
-  border: 1px solid var(--fh-ink-20);
-  border-radius: 10px;
-}
+  --brand-claim-font-size: 10px;
+  --brand-claim-letter-spacing: .18em;      /* Headlines 100–200 → 0.10–0.20em */
+  --brand-claim-text-align: center;
+  --brand-claim-color: var(--fh-ink-80);
+  --brand-claim-margin-top: 2px;
 
-/* Bubbles – links (Bot) / rechts (User) im Messenger-Stil */
-.msg { display: flex; width: 100%; }
-.msg .bubble {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  font-size: 14.5px;           /* Fließtext ~12pt → ca. 16px; hier minimal kleiner, wirkt eleganter */
-  letter-spacing: .02em;       /* Fließtext Laufweite ~50 → ~0.05em; wir gehen moderat */
-}
+  --chat-log-border: 1px solid var(--fh-ink-20);
+  --chat-log-border-radius: 10px;
 
-/* Bot (links, positiv) */
-.msg.bot { justify-content: flex-start; }
-.msg.bot .bubble {
-  background: var(--fh-bubble-bot);
-  color: var(--fh-ink);
-  border-top-left-radius: 4px;
-  border: 1px solid var(--fh-ink-20);
-}
+  --chat-msg-bubble-max-width: 78%;
+  --chat-msg-bubble-padding: 10px 14px;
+  --chat-msg-bubble-border-radius: 14px;
+  --chat-msg-bubble-line-height: 1.5;
+  --chat-msg-bubble-font-size: 14.5px;
+  --chat-msg-bubble-letter-spacing: .02em;
 
-/* User (rechts, negativ) */
-.msg.user { justify-content: flex-end; }
-.msg.user .bubble {
-  background: var(--fh-bubble-user);
-  color: #fff;
-  border-top-right-radius: 4px;
-  letter-spacing: .03em;       /* etwas mehr Tracking für Negativschrift */
-  text-align: right;
-  border: 1px solid var(--fh-ink);
-}
+  --chat-msg-bot-background: var(--fh-bubble-bot);
+  --chat-msg-bot-color: var(--fh-ink);
+  --chat-msg-bot-border-top-left-radius: 4px;
+  --chat-msg-bot-border: 1px solid var(--fh-ink-20);
 
-/* Labels „Max:“ / „Du:“ zurückhaltend (Book/Medium) */
-.msg .bubble strong {
-  letter-spacing: .05em;
-  font-weight: 500;            /* Medium */
-  display: inline-block;
-  margin-right: .35em;
-  opacity: .9;
-}
+  --chat-msg-user-background: var(--fh-bubble-user);
+  --chat-msg-user-color: #fff;
+  --chat-msg-user-border-top-right-radius: 4px;
+  --chat-msg-user-border: 1px solid var(--fh-ink);
+  --chat-msg-user-letter-spacing: .03em;       /* etwas mehr Tracking für Negativschrift */
 
-/* Eingabe + Buttons */
-.chat-controls input[type="text"] {
-  border: 1px solid var(--fh-ink-20);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 15px;
-  letter-spacing: .02em;
-}
-.chat-controls input[type="text"]:focus {
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fh-focus) 30%, transparent);
-  border-color: var(--fh-focus);
-}
-.chat-controls .privacy {
-  color: white;
-}
-.chat-controls button {
-  background: #fff;
-  color: var(--fh-ink);
-  border-radius: 10px;
-  padding: 10px 14px;
-  letter-spacing: .06em;       /* leichter „Button“-Look */
-}
-.chat-controls button:disabled {
-  background: #9AA3A5;
-}
+  --chat-msg-strong-font-weight: 500;          /* Medium */
+  --chat-msg-strong-letter-spacing: .05em;
+  --chat-msg-strong-margin-right: .35em;
+  --chat-msg-strong-opacity: .9;
 
-/* Sekundäre Elemente */
-.return-link {
-  background: rgba(45,57,59, .85);
-  border: 1px solid var(--fh-ink);
-}
+  --chat-input-border: 1px solid var(--fh-ink-20);
+  --chat-input-border-radius: 10px;
+  --chat-input-padding: 12px 14px;
+  --chat-input-font-size: 15px;
+  --chat-input-letter-spacing: .02em;
+  --chat-input-focus-outline: 2px solid transparent;
+  --chat-input-focus-box-shadow: 0 0 0 3px color-mix(in srgb, var(--fh-focus) 30%, transparent);
+  --chat-input-focus-border-color: var(--fh-focus);
 
-/* Kleintypografie im Log (Links, Listen) */
-#chat-log a {
-  color: var(--fh-ink);
-  text-decoration-thickness: 1px;
+  --chat-privacy-color: #ffffff;
+
+  --chat-button-background: #fff;
+  --chat-button-color: var(--fh-ink);
+  --chat-button-border-radius: 10px;
+  --chat-button-padding: 10px 14px;
+  --chat-button-letter-spacing: .06em;       /* leichter „Button“-Look */
+  --chat-button-disabled-background: #9AA3A5;
+
+  --return-link-background: rgba(45,57,59, .85);
+  --return-link-border: 1px solid var(--fh-ink);
+
+  --chat-log-link-color: var(--fh-ink);
+  --chat-log-link-decoration-thickness: 1px;
+  --chat-log-list-padding-left: 1.2em;
 }
-#chat-log ul { padding-left: 1.2em; }
 
 /* Headline-Typo – falls irgendwo Überschriften auftauchen */
 h1, h2, h3 {
-  text-transform: uppercase; 
+  text-transform: uppercase;
   letter-spacing: .14em;      /* 100–200 → 0.10–0.20em, mittig gewählt */
   font-weight: 500;           /* Book/Medium */
 }
