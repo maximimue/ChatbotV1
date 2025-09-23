@@ -105,7 +105,7 @@ if (!function_exists('chatbot_asset_url')) {
             return $value;
         }
 
-        if ($value[0] === '/') {
+        if ($value[0] === '/' && !file_exists($value)) {
             return $value;
         }
 
