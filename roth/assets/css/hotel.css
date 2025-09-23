@@ -5,6 +5,7 @@
 :root {
   --hotel-background-image: url('../images/background.jpg');
   --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+
   --chat-background-color: #ffffff;
   --chat-box-background-color: #ffffff;
   --chat-primary-color: #AE2B23;

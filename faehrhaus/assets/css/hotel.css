@@ -1,5 +1,5 @@
 /*
- * FÄHRHAUS SYLT – hotelspezifische Variablen.
+ * FÄHRHAUS SYLT – hotelspezifische Stile gemäß CI
  */
 
 @font-face {
@@ -40,3 +40,4 @@
   --hotel-return-link-background: var(--chat-return-link-background);
   --chat-input-focus-ring: color-mix(in srgb, var(--chat-primary-color) 30%, transparent);
 }
+
