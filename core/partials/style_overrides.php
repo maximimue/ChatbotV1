@@ -4,21 +4,34 @@
  */
 $styleVariables = [];
 $colorMap = [
-    'CHAT_BACKGROUND_COLOR'     => '--chat-background-color',
-    'CHAT_BOX_BACKGROUND_COLOR' => '--chat-box-background-color',
-    'CHAT_PRIMARY_COLOR'        => '--chat-primary-color',
-    'CHAT_PRIMARY_TEXT_COLOR'   => '--chat-primary-text-color',
-    'CHAT_USER_BUBBLE_COLOR'    => '--chat-user-bubble-color',
-    'CHAT_USER_TEXT_COLOR'      => '--chat-user-text-color',
-    'CHAT_BOT_BUBBLE_COLOR'     => '--chat-bot-bubble-color',
-    'CHAT_BOT_TEXT_COLOR'       => '--chat-bot-text-color',
-    'CHAT_LINK_COLOR'           => '--chat-link-color',
+    'THEME_COLOR_BASE'             => '--theme-color-base',
+    'THEME_COLOR_SURFACE'          => '--theme-color-surface',
+    'THEME_COLOR_PRIMARY'          => '--theme-color-primary',
+    'THEME_COLOR_PRIMARY_CONTRAST' => '--theme-color-primary-contrast',
+    'THEME_COLOR_TEXT'             => '--theme-color-text',
+];
+
+$themeDefaults = [
+    'THEME_COLOR_BASE'             => '#F0F0F0',
+    'THEME_COLOR_SURFACE'          => '#FFFFFF',
+    'THEME_COLOR_PRIMARY'          => '#003366',
+    'THEME_COLOR_PRIMARY_CONTRAST' => '#FFFFFF',
+    'THEME_COLOR_TEXT'             => '#0F172A',
 ];
 
 foreach ($colorMap as $configKey => $cssVar) {
-    if (isset($$configKey) && is_string($$configKey) && $$configKey !== '') {
-        $styleVariables[] = $cssVar . ': ' . htmlspecialchars((string)$$configKey, ENT_QUOTES);
+    $value = isset($$configKey) ? chatbot_normalize_hex_color((string)$$configKey) : null;
+
+    if ($value === null) {
+        continue;
     }
+
+    $default = $themeDefaults[$configKey] ?? null;
+    if ($default !== null && $value === $default) {
+        continue;
+    }
+
+    $styleVariables[] = $cssVar . ': ' . htmlspecialchars($value, ENT_QUOTES);
 }
 
 $backgroundImageUrl = null;

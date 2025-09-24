@@ -29,6 +29,70 @@ if (isset($configPath) && file_exists($configPath)) {
     die('Konfigurationsdatei nicht gefunden. Bitte setzen Sie $configPath vor dem Einbinden von init.php.');
 }
 
+if (!function_exists('chatbot_normalize_hex_color')) {
+    /**
+     * Normalisiert Hex-Farbwerte (#RRGGBB) und gibt sie in konsistenter Großschreibung zurück.
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    function chatbot_normalize_hex_color(?string $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        if (!preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value, $matches)) {
+            return null;
+        }
+
+        $hex = strtoupper($matches[1]);
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0]
+                . $hex[1] . $hex[1]
+                . $hex[2] . $hex[2];
+        }
+
+        return '#' . $hex;
+    }
+}
+
+$chatbotThemeDefaults = [
+    'THEME_COLOR_BASE'              => '#F0F0F0',
+    'THEME_COLOR_SURFACE'           => '#FFFFFF',
+    'THEME_COLOR_PRIMARY'           => '#003366',
+    'THEME_COLOR_PRIMARY_CONTRAST'  => '#FFFFFF',
+    'THEME_COLOR_TEXT'              => '#0F172A',
+];
+
+$chatbotThemeLegacyMap = [
+    'THEME_COLOR_BASE'             => isset($CHAT_BACKGROUND_COLOR) ? (string)$CHAT_BACKGROUND_COLOR : null,
+    'THEME_COLOR_SURFACE'          => isset($CHAT_BOX_BACKGROUND_COLOR) ? (string)$CHAT_BOX_BACKGROUND_COLOR : null,
+    'THEME_COLOR_PRIMARY'          => isset($CHAT_PRIMARY_COLOR) ? (string)$CHAT_PRIMARY_COLOR : null,
+    'THEME_COLOR_PRIMARY_CONTRAST' => isset($CHAT_PRIMARY_TEXT_COLOR) ? (string)$CHAT_PRIMARY_TEXT_COLOR : null,
+    'THEME_COLOR_TEXT'             => isset($CHAT_BOT_TEXT_COLOR) ? (string)$CHAT_BOT_TEXT_COLOR : null,
+];
+
+foreach ($chatbotThemeDefaults as $themeKey => $defaultHex) {
+    $explicit = isset(${$themeKey}) ? chatbot_normalize_hex_color((string)${$themeKey}) : null;
+
+    if ($explicit === null) {
+        $legacy = $chatbotThemeLegacyMap[$themeKey] ?? null;
+        $explicit = chatbot_normalize_hex_color(is_string($legacy) ? $legacy : null);
+    }
+
+    if ($explicit === null) {
+        $explicit = $defaultHex;
+    }
+
+    ${$themeKey} = $explicit;
+}
+
 // Basisverzeichnis des Hotels und Pfad zur Konfiguration verfügbar machen
 if (!isset($HOTEL_BASE_PATH) || !is_string($HOTEL_BASE_PATH) || $HOTEL_BASE_PATH === '') {
     if (isset($resolvedConfig) && $resolvedConfig !== false) {
