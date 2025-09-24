@@ -4,35 +4,34 @@
 
 :root {
   /* Roth setzt auf kräftiges Rot und klare Kontraste */
-  --roth-text: #000000;
-  --roth-text-soft: rgba(174, 42, 35, 0.81);
-  --roth-border: rgba(174, 42, 35, 0.29);
-  --roth-primary: #ae2b23;
-  --roth-neutral: #f1f6f7;
+  --roth-crimson: #ae2b23;
+  --roth-ink: #000000;
+  --roth-cloud: #f1f6f7;
+  --roth-snow: #ffffff;
 
   --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  --chat-text-color: var(--roth-text);
+  --chat-text-color: var(--roth-ink);
 
   --chat-background-image: url('../images/background.jpg');
   --chat-background-attachment: fixed;
 
-  --chat-primary-color: var(--roth-primary);
-  --chat-primary-text-color: #ffffff;
-  --chat-link-color: var(--roth-primary);
+  --chat-primary-color: var(--roth-crimson);
+  --chat-primary-text-color: var(--roth-snow);
+  --chat-link-color: var(--roth-crimson);
 
-  --chat-box-background: #ffffff;
-  --chat-box-border: 1px solid var(--roth-border);
+  --chat-box-background: var(--roth-snow);
+  --chat-box-border: 1px solid color-mix(in srgb, var(--roth-crimson) 20%, transparent);
   --chat-box-border-radius: 14px;
-  --chat-box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+  --chat-box-shadow: 0 8px 28px color-mix(in srgb, #000 30%, transparent);
   --chat-box-overflow: hidden;
 
-  --chat-header-background: var(--roth-primary);
+  --chat-header-background: var(--roth-crimson);
   --chat-header-padding: 14px 0 12px;
-  --chat-header-border: 1px solid rgba(255, 255, 255, 0.12);
+  --chat-header-border: 1px solid color-mix(in srgb, var(--roth-snow) 12%, transparent);
   --chat-logo-max-width: 210px;
-  --chat-claim-color: rgba(255, 255, 255, 0.9);
+  --chat-claim-color: color-mix(in srgb, var(--roth-snow) 90%, var(--roth-crimson) 10%);
 
-  --chat-log-border: 1px solid var(--roth-border);
+  --chat-log-border: 1px solid color-mix(in srgb, var(--roth-crimson) 20%, transparent);
   --chat-log-border-radius: 10px;
   --chat-log-gap: 8px;
 
@@ -41,36 +40,36 @@
   --chat-bubble-border-radius: 14px;
   --chat-bubble-letter-spacing: 0.01em;
   --chat-bubble-line-height: 1.5;
-  --chat-bot-bubble-color: var(--roth-neutral);
-  --chat-bot-text-color: var(--roth-text);
-  --chat-bot-bubble-border: 1px solid var(--roth-border);
-  --chat-user-bubble-color: var(--roth-primary);
-  --chat-user-text-color: #ffffff;
-  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--roth-primary) 70%, #000 30%);
+  --chat-bot-bubble-color: var(--roth-cloud);
+  --chat-bot-text-color: var(--roth-ink);
+  --chat-bot-bubble-border: 1px solid color-mix(in srgb, var(--roth-crimson) 20%, transparent);
+  --chat-user-bubble-color: var(--roth-crimson);
+  --chat-user-text-color: var(--roth-snow);
+  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--roth-crimson) 65%, #000 35%);
 
-  --chat-input-border: 1px solid var(--roth-border);
+  --chat-input-border: 1px solid color-mix(in srgb, var(--roth-crimson) 20%, transparent);
   --chat-input-border-radius: 10px;
   --chat-input-padding: 12px 14px;
   --chat-input-font-size: 15px;
-  --chat-input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--roth-primary) 25%, transparent);
-  --chat-input-focus-border-color: var(--roth-primary);
+  --chat-input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--roth-crimson) 25%, transparent);
+  --chat-input-focus-border-color: var(--roth-crimson);
 
-  --chat-privacy-color: var(--roth-text-soft);
+  --chat-privacy-color: color-mix(in srgb, var(--roth-crimson) 70%, transparent);
 
-  --chat-button-background: var(--roth-primary);
-  --chat-button-border: 1px solid color-mix(in srgb, var(--roth-primary) 70%, #000 30%);
+  --chat-button-background: var(--roth-crimson);
+  --chat-button-border: 1px solid color-mix(in srgb, var(--roth-crimson) 65%, #000 35%);
   --chat-button-border-radius: 10px;
   --chat-button-padding: 10px 14px;
   --chat-button-letter-spacing: 0.03em;
-  --chat-button-disabled-background: #c78f89;
-  --chat-button-disabled-border: 1px solid #c78f89;
+  --chat-button-disabled-background: color-mix(in srgb, var(--roth-crimson) 35%, var(--roth-snow) 65%);
+  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--roth-crimson) 35%, var(--roth-snow) 65%);
 
-  --chat-return-link-background: rgba(174, 43, 35, 0.9);
-  --chat-return-link-border: 1px solid color-mix(in srgb, var(--roth-primary) 70%, #000 30%);
+  --chat-return-link-background: color-mix(in srgb, var(--roth-crimson) 90%, transparent);
+  --chat-return-link-border: 1px solid color-mix(in srgb, var(--roth-crimson) 65%, #000 35%);
 }
 
 body {
-  background-image: url('../images/background.jpg');
+  background-image: url('../images/background.jpg') !important;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

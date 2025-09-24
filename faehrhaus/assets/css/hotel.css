@@ -13,10 +13,8 @@
 :root {
   /* Essenzielle CI-Farben */
   --fh-ink: #2d393b;
-  --fh-ink-soft: rgba(45, 57, 59, 0.8);
-  --fh-border: rgba(45, 57, 59, 0.2);
-  --fh-surface: #f3f5f5;
-  --fh-surface-dark: rgb(45, 57, 59);
+  --fh-foam: #f3f5f5;
+  --fh-snow: #ffffff;
 
   --chat-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
   --chat-text-color: var(--fh-ink);
@@ -25,23 +23,23 @@
   --chat-background-attachment: fixed;
 
   --chat-primary-color: var(--fh-ink);
-  --chat-primary-text-color: #ffffff;
+  --chat-primary-text-color: var(--fh-snow);
   --chat-link-color: var(--fh-ink);
 
-  --chat-box-background: var(--fh-surface-dark);
-  --chat-box-border: 1px solid var(--fh-border);
+  --chat-box-background: color-mix(in srgb, var(--fh-ink) 90%, #000 10%);
+  --chat-box-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
   --chat-box-border-radius: 14px;
-  --chat-box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  --chat-box-shadow: 0 8px 28px color-mix(in srgb, var(--fh-ink) 30%, transparent);
 
   --chat-header-background: transparent;
   --chat-header-padding: 6px 0 10px;
-  --chat-header-border: 1px solid var(--fh-border);
+  --chat-header-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
   --chat-logo-max-width: 220px;
-  --chat-claim-color: var(--fh-ink-soft);
+  --chat-claim-color: color-mix(in srgb, var(--fh-snow) 30%, var(--fh-ink) 70%);
   --chat-claim-letter-spacing: 0.18em;
 
-  --chat-log-background: #ffffff;
-  --chat-log-border: 1px solid var(--fh-border);
+  --chat-log-background: var(--fh-snow);
+  --chat-log-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
   --chat-log-border-radius: 10px;
   --chat-bubble-max-width: 78%;
   --chat-bubble-padding: 10px 14px;
@@ -49,38 +47,37 @@
   --chat-bubble-font-size: 14.5px;
   --chat-bubble-letter-spacing: 0.02em;
   --chat-bubble-line-height: 1.5;
-  --chat-bot-bubble-color: var(--fh-surface);
-  --chat-bot-bubble-border: 1px solid var(--fh-border);
+  --chat-bot-bubble-color: var(--fh-foam);
+  --chat-bot-bubble-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
   --chat-user-bubble-color: var(--fh-ink);
-  --chat-user-text-color: #ffffff;
+  --chat-user-text-color: var(--fh-snow);
   --chat-user-letter-spacing: 0.03em;
-  --chat-user-bubble-border: 1px solid var(--fh-ink);
+  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--fh-ink) 70%, #000 30%);
 
-  --chat-input-border: 1px solid var(--fh-border);
+  --chat-input-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
   --chat-input-border-radius: 10px;
   --chat-input-padding: 12px 14px;
   --chat-input-font-size: 15px;
   --chat-input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--fh-ink) 30%, transparent);
   --chat-input-focus-border-color: var(--fh-ink);
 
-  --chat-privacy-color: #ffffff;
+  --chat-privacy-color: var(--fh-snow);
 
-  --chat-button-background: #ffffff;
+  --chat-button-background: var(--fh-snow);
   --chat-button-color: var(--fh-ink);
   --chat-button-border: 1px solid transparent;
   --chat-button-border-radius: 10px;
   --chat-button-padding: 10px 14px;
   --chat-button-letter-spacing: 0.06em;
-  --chat-button-disabled-background: #9aa3a5;
-  --chat-button-disabled-border: 1px solid #9aa3a5;
+  --chat-button-disabled-background: color-mix(in srgb, var(--fh-ink) 35%, var(--fh-snow) 65%);
+  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--fh-ink) 35%, var(--fh-snow) 65%);
 
-  --chat-return-link-background: rgba(45, 57, 59, 0.85);
-  --chat-return-link-border: 1px solid var(--fh-ink);
+  --chat-return-link-background: color-mix(in srgb, var(--fh-ink) 85%, transparent);
+  --chat-return-link-border: 1px solid color-mix(in srgb, var(--fh-ink) 70%, #000 30%);
 }
 
-
 body {
-  background-image: url('../images/background.jpg');
+  background-image: url('../images/background.jpg') !important;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -110,18 +107,18 @@ h3 {
 .privacy-box .privacy-content h1 {
   margin: 0 0 16px;
   font-size: 26px;
-  color: #ffffff;
+  color: var(--fh-snow);
 }
 
 .privacy-box .privacy-content h2 {
   margin: 24px 0 8px;
   font-size: 18px;
-  color: #c2c2c2ff;
+  color: color-mix(in srgb, var(--fh-snow) 65%, var(--fh-ink) 35%);
 }
 
 .privacy-box .privacy-content p,
 .privacy-box .privacy-content ul,
 .privacy-box .privacy-content address {
-  color: #e4e4e4ff;
+  color: color-mix(in srgb, var(--fh-snow) 80%, var(--fh-ink) 20%);
   margin: 0 0 12px;
 }
