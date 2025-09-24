@@ -7,7 +7,24 @@
  */
 
 :root {
-  --chat-background-color: #f0f0f0;
+  /*
+   * Zentrale Farb-Tokens. Hotels überschreiben ausschließlich diese fünf
+   * Werte, alle weiteren Farben werden hieraus abgeleitet.
+   */
+  --theme-color-base: #f0f0f0;
+  --theme-color-surface: #ffffff;
+  --theme-color-primary: #003366;
+  --theme-color-primary-contrast: #ffffff;
+  --theme-color-text: #0f172a;
+
+  /* Abgeleitete Hilfsfarben */
+  --theme-color-text-muted: color-mix(in srgb, var(--theme-color-text) 70%, var(--theme-color-surface) 30%);
+  --theme-color-border: color-mix(in srgb, var(--theme-color-text) 18%, transparent);
+  --theme-color-primary-soft: color-mix(in srgb, var(--theme-color-primary) 15%, transparent);
+  --theme-color-primary-strong: color-mix(in srgb, var(--theme-color-primary) 80%, #000 20%);
+
+  /* Allgemeine Chat-Defaults */
+  --chat-background-color: var(--theme-color-base);
   --chat-background-image: none;
   --chat-background-size: cover;
   --chat-background-position: center;
@@ -15,41 +32,41 @@
   --chat-background-attachment: scroll;
 
   --chat-font-family: Arial, Helvetica, sans-serif;
-  --chat-text-color: #0f172a;
+  --chat-text-color: var(--theme-color-text);
 
-  --chat-box-background: #ffffff;
-  --chat-box-border: none;
+  --chat-box-background: var(--theme-color-surface);
+  --chat-box-border: 1px solid var(--theme-color-border);
   --chat-box-border-radius: 12px;
-  --chat-box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  --chat-box-shadow: 0 8px 28px color-mix(in srgb, var(--theme-color-text) 14%, transparent);
   --chat-box-padding: 20px;
   --chat-box-overflow: visible;
 
-  --chat-primary-color: #003366;
-  --chat-primary-text-color: #ffffff;
-  --chat-link-color: var(--chat-primary-color);
+  --chat-primary-color: var(--theme-color-primary);
+  --chat-primary-text-color: var(--theme-color-primary-contrast);
+  --chat-link-color: var(--theme-color-primary);
 
-  --chat-user-bubble-color: #0078d7;
-  --chat-user-text-color: #ffffff;
-  --chat-bot-bubble-color: #f0f0f0;
-  --chat-bot-text-color: #000000;
+  --chat-user-bubble-color: var(--theme-color-primary);
+  --chat-user-text-color: var(--theme-color-primary-contrast);
+  --chat-bot-bubble-color: color-mix(in srgb, var(--theme-color-surface) 85%, var(--theme-color-base) 15%);
+  --chat-bot-text-color: var(--theme-color-text);
 
-  --chat-header-background: transparent;
-  --chat-header-border: none;
-  --chat-header-padding: 0;
+  --chat-header-background: var(--theme-color-primary-strong);
+  --chat-header-border: 1px solid var(--theme-color-border);
+  --chat-header-padding: 12px 0;
   --chat-header-margin-bottom: 10px;
   --chat-header-text-align: center;
   --chat-logo-max-width: 80%;
   --chat-logo-filter: none;
 
-  --chat-claim-color: var(--chat-primary-color);
+  --chat-claim-color: color-mix(in srgb, var(--theme-color-primary-contrast) 85%, var(--theme-color-primary) 15%);
   --chat-claim-font-size: 11px;
   --chat-claim-letter-spacing: 0.12em;
   --chat-claim-text-transform: uppercase;
   --chat-claim-margin-top: 4px;
 
-  --chat-log-background: #ffffff;
-  --chat-log-border: 1px solid #ddd;
-  --chat-log-border-radius: 4px;
+  --chat-log-background: var(--theme-color-surface);
+  --chat-log-border: 1px solid var(--theme-color-border);
+  --chat-log-border-radius: 6px;
   --chat-log-gap: 8px;
   --chat-log-padding: 10px;
 
@@ -60,34 +77,33 @@
   --chat-bubble-letter-spacing: 0;
   --chat-bubble-line-height: 1.4;
 
-  --chat-bot-bubble-border: 1px solid transparent;
-  --chat-user-bubble-border: 1px solid transparent;
+  --chat-bot-bubble-border: 1px solid color-mix(in srgb, var(--theme-color-border) 70%, transparent);
+  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 60%, #000 40%);
   --chat-user-text-align: right;
   --chat-user-letter-spacing: 0;
 
-  --chat-input-border: 1px solid #ccc;
-  --chat-input-border-radius: 4px;
-  --chat-input-padding: 8px;
+  --chat-input-border: 1px solid var(--theme-color-border);
+  --chat-input-border-radius: 6px;
+  --chat-input-padding: 10px;
   --chat-input-font-size: 1em;
   --chat-input-focus-outline: 2px solid transparent;
-  --chat-input-focus-shadow: none;
-  --chat-input-focus-border-color: var(--chat-primary-color);
+  --chat-input-focus-shadow: 0 0 0 3px var(--theme-color-primary-soft);
+  --chat-input-focus-border-color: var(--theme-color-primary);
 
-  --chat-privacy-color: inherit;
+  --chat-privacy-color: var(--theme-color-text-muted);
 
-  --chat-button-background: var(--chat-primary-color);
-  --chat-button-color: var(--chat-primary-text-color);
-  --chat-button-border: none;
-  --chat-button-border-radius: 4px;
-  --chat-button-padding: 8px;
-  --chat-button-letter-spacing: 0;
-  --chat-button-disabled-background: #999;
-  --chat-button-disabled-border: none;
+  --chat-button-background: var(--theme-color-primary);
+  --chat-button-color: var(--theme-color-primary-contrast);
+  --chat-button-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 55%, #000 45%);
+  --chat-button-border-radius: 6px;
+  --chat-button-padding: 10px;
+  --chat-button-letter-spacing: 0.02em;
+  --chat-button-disabled-background: color-mix(in srgb, var(--theme-color-primary) 30%, var(--theme-color-surface) 70%);
+  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 20%, var(--theme-color-surface) 80%);
 
-  --chat-return-link-background: rgba(0, 0, 0, 0.6);
-  --chat-return-link-color: #ffffff;
-  --chat-return-link-border: none;
-
+  --chat-return-link-background: color-mix(in srgb, var(--theme-color-primary) 75%, #000 25%);
+  --chat-return-link-color: var(--theme-color-primary-contrast);
+  --chat-return-link-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 55%, #000 45%);
   --chat-link-decoration: underline;
   --chat-link-decoration-hover: none;
 }
@@ -290,8 +306,8 @@ body {
 .privacy-box {
   max-width: 720px;
   max-height: 90vh;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--theme-color-surface);
+  color: var(--theme-color-text);
 }
 
 .privacy-box header {
@@ -308,19 +324,19 @@ body {
 .privacy-box .privacy-content h1 {
   margin: 0 0 16px;
   font-size: 26px;
-  color: #0f172a;
+  color: var(--theme-color-text);
 }
 
 .privacy-box .privacy-content h2 {
   margin: 24px 0 8px;
   font-size: 18px;
-  color: #111827;
+  color: color-mix(in srgb, var(--theme-color-text) 85%, var(--theme-color-surface) 15%);
 }
 
 .privacy-box .privacy-content p,
 .privacy-box .privacy-content ul,
 .privacy-box .privacy-content address {
-  color: #334155;
+  color: color-mix(in srgb, var(--theme-color-text) 70%, var(--theme-color-surface) 30%);
   margin: 0 0 12px;
 }
 

@@ -4,74 +4,20 @@
  */
 
 :root {
-  /* Kompakte Farbpalette für Aarnhoog */
-  --ah-ink: #123c48;
-  --ah-midnight: #0d2c33;
-  --ah-ocean: #0f6e8f;
-  --ah-foam: #f1f6f7;
-  --ah-white: #ffffff;
+  /* Fünf Farbwerte für das Aarnhoog-Thema */
+  --theme-color-base: #f1f6f7;
+  --theme-color-surface: #ffffff;
+  --theme-color-primary: #0f6e8f;
+  --theme-color-primary-contrast: #ffffff;
+  --theme-color-text: #123c48;
 
   --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  --chat-text-color: var(--ah-ink);
-
   --chat-background-image: url('../images/background.jpg');
   --chat-background-attachment: fixed;
-
-  --chat-primary-color: var(--ah-ocean);
-  --chat-primary-text-color: var(--ah-white);
-  --chat-link-color: var(--ah-ocean);
-
-  --chat-box-background: var(--ah-white);
-  --chat-box-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
-  --chat-box-border-radius: 14px;
-  --chat-box-shadow: 0 8px 28px color-mix(in srgb, var(--ah-midnight) 30%, transparent);
-  --chat-box-overflow: hidden;
-
-  --chat-header-background: var(--ah-midnight);
-  --chat-header-padding: 14px 0 12px;
-  --chat-header-border: 1px solid color-mix(in srgb, var(--ah-white) 12%, transparent);
-  --chat-logo-max-width: 210px;
-  --chat-claim-color: color-mix(in srgb, var(--ah-white) 90%, var(--ah-ink) 10%);
-
-  --chat-log-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
-  --chat-log-border-radius: 10px;
-  --chat-log-gap: 8px;
-
-  --chat-bubble-max-width: 78%;
-  --chat-bubble-padding: 10px 14px;
-  --chat-bubble-border-radius: 14px;
-  --chat-bubble-letter-spacing: 0.01em;
-  --chat-bubble-line-height: 1.5;
-  --chat-bot-bubble-color: var(--ah-foam);
-  --chat-bot-text-color: var(--ah-ink);
-  --chat-bot-bubble-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
-  --chat-user-bubble-color: var(--ah-ocean);
-  --chat-user-text-color: var(--ah-white);
-  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--ah-ocean) 65%, var(--ah-midnight) 35%);
-
-  --chat-input-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
-  --chat-input-border-radius: 10px;
-  --chat-input-padding: 12px 14px;
-  --chat-input-font-size: 15px;
-  --chat-input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--ah-ocean) 25%, transparent);
-  --chat-input-focus-border-color: var(--ah-ocean);
-
-  --chat-privacy-color: color-mix(in srgb, var(--ah-ink) 75%, transparent);
-
-  --chat-button-background: var(--ah-ocean);
-  --chat-button-border: 1px solid color-mix(in srgb, var(--ah-ocean) 65%, var(--ah-midnight) 35%);
-  --chat-button-border-radius: 10px;
-  --chat-button-padding: 10px 14px;
-  --chat-button-letter-spacing: 0.03em;
-  --chat-button-disabled-background: color-mix(in srgb, var(--ah-ocean) 35%, var(--ah-white) 65%);
-  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--ah-ocean) 35%, var(--ah-white) 65%);
-
-  --chat-return-link-background: color-mix(in srgb, var(--ah-ocean) 90%, transparent);
-  --chat-return-link-border: 1px solid color-mix(in srgb, var(--ah-ocean) 65%, var(--ah-midnight) 35%);
 }
 
 body {
-  background-image: url('../images/background.jpg') !important;
+  background-image: var(--chat-background-image) !important;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
