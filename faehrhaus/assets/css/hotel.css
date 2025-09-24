@@ -11,12 +11,16 @@
 }
 
 :root {
+  /* Essenzielle CI-Farben */
   --fh-ink: #2d393b;
-  --fh-ink-80: rgba(45, 57, 59, 0.8);
-  --fh-ink-20: rgba(45, 57, 59, 0.2);
+  --fh-ink-soft: rgba(45, 57, 59, 0.8);
+  --fh-border: rgba(45, 57, 59, 0.2);
+  --fh-surface: #f3f5f5;
+  --fh-surface-dark: rgb(45, 57, 59);
 
   --chat-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
   --chat-text-color: var(--fh-ink);
+
   --chat-background-image: url('../images/background.jpg');
   --chat-background-attachment: fixed;
 
@@ -24,19 +28,20 @@
   --chat-primary-text-color: #ffffff;
   --chat-link-color: var(--fh-ink);
 
-  --chat-box-background: rgb(45, 57, 59);
-  --chat-box-border: 1px solid var(--fh-ink-20);
+  --chat-box-background: var(--fh-surface-dark);
+  --chat-box-border: 1px solid var(--fh-border);
   --chat-box-border-radius: 14px;
   --chat-box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
 
+  --chat-header-background: transparent;
   --chat-header-padding: 6px 0 10px;
-  --chat-header-border: 1px solid var(--fh-ink-20);
+  --chat-header-border: 1px solid var(--fh-border);
   --chat-logo-max-width: 220px;
-  --chat-claim-color: var(--fh-ink-80);
+  --chat-claim-color: var(--fh-ink-soft);
   --chat-claim-letter-spacing: 0.18em;
 
   --chat-log-background: #ffffff;
-  --chat-log-border: 1px solid var(--fh-ink-20);
+  --chat-log-border: 1px solid var(--fh-border);
   --chat-log-border-radius: 10px;
   --chat-bubble-max-width: 78%;
   --chat-bubble-padding: 10px 14px;
@@ -44,14 +49,14 @@
   --chat-bubble-font-size: 14.5px;
   --chat-bubble-letter-spacing: 0.02em;
   --chat-bubble-line-height: 1.5;
-  --chat-bot-bubble-color: #f3f5f5;
-  --chat-bot-bubble-border: 1px solid var(--fh-ink-20);
+  --chat-bot-bubble-color: var(--fh-surface);
+  --chat-bot-bubble-border: 1px solid var(--fh-border);
   --chat-user-bubble-color: var(--fh-ink);
   --chat-user-text-color: #ffffff;
   --chat-user-letter-spacing: 0.03em;
   --chat-user-bubble-border: 1px solid var(--fh-ink);
 
-  --chat-input-border: 1px solid var(--fh-ink-20);
+  --chat-input-border: 1px solid var(--fh-border);
   --chat-input-border-radius: 10px;
   --chat-input-padding: 12px 14px;
   --chat-input-font-size: 15px;
@@ -71,6 +76,19 @@
 
   --chat-return-link-background: rgba(45, 57, 59, 0.85);
   --chat-return-link-border: 1px solid var(--fh-ink);
+}
+
+
+body {
+  background-image: url('../images/background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.chat-box header img {
+  filter: none;
 }
 
 h1,
