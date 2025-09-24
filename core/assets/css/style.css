@@ -104,7 +104,6 @@
   --chat-return-link-background: color-mix(in srgb, var(--theme-color-primary) 75%, #000 25%);
   --chat-return-link-color: var(--theme-color-primary-contrast);
   --chat-return-link-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 55%, #000 45%);
-
   --chat-link-decoration: underline;
   --chat-link-decoration-hover: none;
 }
