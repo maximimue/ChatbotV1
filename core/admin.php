@@ -72,6 +72,63 @@ function admin_update_config_values(?string $configPath, array $values, array &$
     return true;
 }
 
+/**
+ * Normalisiert Hex-Farbwerte (#RRGGBB) für die Admin-Eingabe.
+ *
+ * @param string|null $value
+ * @return string|null
+ */
+function admin_normalize_hex_color(?string $value): ?string
+{
+    if (function_exists('chatbot_normalize_hex_color')) {
+        return chatbot_normalize_hex_color($value);
+    }
+
+    if (!is_string($value)) {
+        return null;
+    }
+
+    $value = trim($value);
+    if ($value === '') {
+        return null;
+    }
+
+    if (!preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value, $matches)) {
+        return null;
+    }
+
+    $hex = strtoupper($matches[1]);
+    if (strlen($hex) === 3) {
+        $hex = $hex[0] . $hex[0]
+            . $hex[1] . $hex[1]
+            . $hex[2] . $hex[2];
+    }
+
+    return '#' . $hex;
+}
+
+/**
+ * Ermittelt den anzuzeigenden Theme-Farbwert anhand neuer und alter Konfigurationsschlüssel.
+ *
+ * @param mixed $primaryValue
+ * @param mixed $legacyValue
+ * @param string $default
+ */
+function admin_resolve_theme_color($primaryValue, $legacyValue, string $default): string
+{
+    $normalizedPrimary = admin_normalize_hex_color(is_string($primaryValue) ? $primaryValue : null);
+    if ($normalizedPrimary !== null) {
+        return $normalizedPrimary;
+    }
+
+    $normalizedLegacy = admin_normalize_hex_color(is_string($legacyValue) ? $legacyValue : null);
+    if ($normalizedLegacy !== null) {
+        return $normalizedLegacy;
+    }
+
+    return $default;
+}
+
 // Relativer Pfad zum Core-Verzeichnis (vom Hotel-Wrapper gesetzt)
 $coreRelative = $coreRelative ?? '.';
 
@@ -111,21 +168,44 @@ if ($faqPath && is_readable($faqPath)) {
 $faqError = '';
 
 $settingsValues = [
-    'HOTEL_NAME'                => isset($HOTEL_NAME) ? (string)$HOTEL_NAME : '',
-    'HOTEL_URL'                 => isset($HOTEL_URL) ? (string)$HOTEL_URL : '',
-    'BOT_NAME'                  => isset($BOT_NAME) ? (string)$BOT_NAME : 'Max',
-    'LOGO_PATH'                 => isset($LOGO_PATH) ? (string)$LOGO_PATH : '',
-    'BACKGROUND_IMAGE_URL'      => isset($BACKGROUND_IMAGE_URL) ? (string)$BACKGROUND_IMAGE_URL : '',
-    'CHAT_BACKGROUND_COLOR'     => isset($CHAT_BACKGROUND_COLOR) ? (string)$CHAT_BACKGROUND_COLOR : '#f0f0f0',
-    'CHAT_BOX_BACKGROUND_COLOR' => isset($CHAT_BOX_BACKGROUND_COLOR) ? (string)$CHAT_BOX_BACKGROUND_COLOR : '#808080',
-    'CHAT_PRIMARY_COLOR'        => isset($CHAT_PRIMARY_COLOR) ? (string)$CHAT_PRIMARY_COLOR : '#003366',
-    'CHAT_PRIMARY_TEXT_COLOR'   => isset($CHAT_PRIMARY_TEXT_COLOR) ? (string)$CHAT_PRIMARY_TEXT_COLOR : '#ffffff',
-    'CHAT_USER_BUBBLE_COLOR'    => isset($CHAT_USER_BUBBLE_COLOR) ? (string)$CHAT_USER_BUBBLE_COLOR : '#0078d7',
-    'CHAT_USER_TEXT_COLOR'      => isset($CHAT_USER_TEXT_COLOR) ? (string)$CHAT_USER_TEXT_COLOR : '#ffffff',
-    'CHAT_BOT_BUBBLE_COLOR'     => isset($CHAT_BOT_BUBBLE_COLOR) ? (string)$CHAT_BOT_BUBBLE_COLOR : '#f0f0f0',
-    'CHAT_BOT_TEXT_COLOR'       => isset($CHAT_BOT_TEXT_COLOR) ? (string)$CHAT_BOT_TEXT_COLOR : '#000000',
-    'CHAT_LINK_COLOR'           => isset($CHAT_LINK_COLOR) ? (string)$CHAT_LINK_COLOR : '#003366',
-    'PROMPT_EXTRA'              => isset($PROMPT_EXTRA) ? (string)$PROMPT_EXTRA : '',
+    'HOTEL_NAME'           => isset($HOTEL_NAME) ? (string)$HOTEL_NAME : '',
+    'HOTEL_URL'            => isset($HOTEL_URL) ? (string)$HOTEL_URL : '',
+    'BOT_NAME'             => isset($BOT_NAME) ? (string)$BOT_NAME : 'Max',
+    'LOGO_PATH'            => isset($LOGO_PATH) ? (string)$LOGO_PATH : '',
+    'BACKGROUND_IMAGE_URL' => isset($BACKGROUND_IMAGE_URL) ? (string)$BACKGROUND_IMAGE_URL : '',
+    'PROMPT_EXTRA'         => isset($PROMPT_EXTRA) ? (string)$PROMPT_EXTRA : '',
+];
+
+$themeDefaults = [
+    'THEME_COLOR_BASE'             => '#F0F0F0',
+    'THEME_COLOR_SURFACE'          => '#FFFFFF',
+    'THEME_COLOR_PRIMARY'          => '#003366',
+    'THEME_COLOR_PRIMARY_CONTRAST' => '#FFFFFF',
+    'THEME_COLOR_TEXT'             => '#0F172A',
+];
+
+$legacyThemeValues = [
+    'THEME_COLOR_BASE'             => isset($CHAT_BACKGROUND_COLOR) ? (string)$CHAT_BACKGROUND_COLOR : null,
+    'THEME_COLOR_SURFACE'          => isset($CHAT_BOX_BACKGROUND_COLOR) ? (string)$CHAT_BOX_BACKGROUND_COLOR : null,
+    'THEME_COLOR_PRIMARY'          => isset($CHAT_PRIMARY_COLOR) ? (string)$CHAT_PRIMARY_COLOR : null,
+    'THEME_COLOR_PRIMARY_CONTRAST' => isset($CHAT_PRIMARY_TEXT_COLOR) ? (string)$CHAT_PRIMARY_TEXT_COLOR : null,
+    'THEME_COLOR_TEXT'             => isset($CHAT_BOT_TEXT_COLOR) ? (string)$CHAT_BOT_TEXT_COLOR : null,
+];
+
+foreach ($themeDefaults as $themeKey => $defaultValue) {
+    $primaryValue = isset(${$themeKey}) ? (string)${$themeKey} : null;
+    $legacyValue = $legacyThemeValues[$themeKey] ?? null;
+    $settingsValues[$themeKey] = admin_resolve_theme_color($primaryValue, $legacyValue, $defaultValue);
+    ${$themeKey} = $settingsValues[$themeKey];
+}
+
+$themeSettingKeys = array_keys($themeDefaults);
+$themeSettingLabels = [
+    'THEME_COLOR_BASE'             => 'Grundfarbe (Base)',
+    'THEME_COLOR_SURFACE'          => 'Flächenfarbe (Surface)',
+    'THEME_COLOR_PRIMARY'          => 'Primärfarbe',
+    'THEME_COLOR_PRIMARY_CONTRAST' => 'Kontrastfarbe (Primär)',
+    'THEME_COLOR_TEXT'             => 'Textfarbe',
 ];
 $settingsErrors = [];
 
@@ -178,6 +258,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newSettings = [];
         foreach ($settingsValues as $key => $current) {
             $value = isset($postedSettings[$key]) ? trim((string)$postedSettings[$key]) : '';
+
+            if (in_array($key, $themeSettingKeys, true)) {
+                $normalized = admin_normalize_hex_color($value);
+                if ($normalized === null) {
+                    $label = $themeSettingLabels[$key] ?? $key;
+                    $settingsErrors[] = 'Ungültiger Farbwert für ' . $label . '.';
+                    $value = $current;
+                } else {
+                    $value = $normalized;
+                }
+            }
+
             $settingsValues[$key] = $value;
             $newSettings[$key] = $value;
         }
@@ -388,40 +480,24 @@ $settingsFlash = admin_filter_flash($flashMessages, 'settings');
                 <input type="text" name="settings[BACKGROUND_IMAGE_URL]" value="<?php echo htmlspecialchars($settingsValues['BACKGROUND_IMAGE_URL']); ?>" placeholder="assets/images/background.jpg">
               </label>
               <label class="field">
-                <span>Chat-Hintergrundfarbe</span>
-                <input type="color" name="settings[CHAT_BACKGROUND_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BACKGROUND_COLOR']); ?>">
+                <span>Grundfarbe (Base)</span>
+                <input type="color" name="settings[THEME_COLOR_BASE]" value="<?php echo htmlspecialchars($settingsValues['THEME_COLOR_BASE']); ?>">
               </label>
               <label class="field">
-                <span>Chatbox-Farbe</span>
-                <input type="color" name="settings[CHAT_BOX_BACKGROUND_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BOX_BACKGROUND_COLOR']); ?>">
+                <span>Flächenfarbe (Surface)</span>
+                <input type="color" name="settings[THEME_COLOR_SURFACE]" value="<?php echo htmlspecialchars($settingsValues['THEME_COLOR_SURFACE']); ?>">
               </label>
               <label class="field">
-                <span>Primärfarbe (Buttons &amp; Links)</span>
-                <input type="color" name="settings[CHAT_PRIMARY_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_PRIMARY_COLOR']); ?>">
+                <span>Primärfarbe</span>
+                <input type="color" name="settings[THEME_COLOR_PRIMARY]" value="<?php echo htmlspecialchars($settingsValues['THEME_COLOR_PRIMARY']); ?>">
               </label>
               <label class="field">
-                <span>Primäre Textfarbe</span>
-                <input type="color" name="settings[CHAT_PRIMARY_TEXT_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_PRIMARY_TEXT_COLOR']); ?>">
+                <span>Kontrastfarbe (Primär)</span>
+                <input type="color" name="settings[THEME_COLOR_PRIMARY_CONTRAST]" value="<?php echo htmlspecialchars($settingsValues['THEME_COLOR_PRIMARY_CONTRAST']); ?>">
               </label>
               <label class="field">
-                <span>Benutzer-Blasenfarbe</span>
-                <input type="color" name="settings[CHAT_USER_BUBBLE_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_USER_BUBBLE_COLOR']); ?>">
-              </label>
-              <label class="field">
-                <span>Benutzer-Textfarbe</span>
-                <input type="color" name="settings[CHAT_USER_TEXT_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_USER_TEXT_COLOR']); ?>">
-              </label>
-              <label class="field">
-                <span>Bot-Blasenfarbe</span>
-                <input type="color" name="settings[CHAT_BOT_BUBBLE_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BOT_BUBBLE_COLOR']); ?>">
-              </label>
-              <label class="field">
-                <span>Bot-Textfarbe</span>
-                <input type="color" name="settings[CHAT_BOT_TEXT_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_BOT_TEXT_COLOR']); ?>">
-              </label>
-              <label class="field">
-                <span>Linkfarbe</span>
-                <input type="color" name="settings[CHAT_LINK_COLOR]" value="<?php echo htmlspecialchars($settingsValues['CHAT_LINK_COLOR']); ?>">
+                <span>Textfarbe</span>
+                <input type="color" name="settings[THEME_COLOR_TEXT]" value="<?php echo htmlspecialchars($settingsValues['THEME_COLOR_TEXT']); ?>">
               </label>
             </div>
           </div>

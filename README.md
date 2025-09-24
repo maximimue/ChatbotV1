@@ -62,11 +62,12 @@ manually when automating deployments. The most commonly adjusted keys are:
 - **Branding assets:** `$LOGO_PATH`, `$BACKGROUND_IMAGE_URL`, and `$HOTEL_CSS_URL`
   control the header logo, optional background image, and additional CSS loaded into
   the chat shell. `$BOT_NAME` sets the label shown for bot messages.【F:core/config.sample.php†L8-L28】【F:core/index.php†L16-L47】
-- **Color palette:** `$CHAT_BACKGROUND_COLOR`, `$CHAT_BOX_BACKGROUND_COLOR`,
-  `$CHAT_PRIMARY_COLOR`, `$CHAT_PRIMARY_TEXT_COLOR`, `$CHAT_USER_BUBBLE_COLOR`,
-  `$CHAT_USER_TEXT_COLOR`, `$CHAT_BOT_BUBBLE_COLOR`, `$CHAT_BOT_TEXT_COLOR`, and
-  `$CHAT_LINK_COLOR` map directly to CSS custom properties that define the chat UI
-  colors.【F:core/config.sample.php†L20-L35】【F:core/admin.php†L92-L113】
+- **Color palette:** `THEME_COLOR_BASE`, `THEME_COLOR_SURFACE`,
+  `THEME_COLOR_PRIMARY`, `THEME_COLOR_PRIMARY_CONTRAST`, and
+  `THEME_COLOR_TEXT` feed the core design tokens that all other chat colors are
+  derived from.【F:core/config.sample.php†L20-L40】【F:core/admin.php†L92-L140】
+  Legacy `CHAT_*` keys remain supported for older hotel configs but are no
+  longer surfaced in the admin UI.【F:core/config.sample.php†L32-L40】【F:core/admin.php†L128-L140】
 
 Changes made via the admin UI are persisted in `config.php`; editing the file by hand
 is useful when seeding defaults before handing access to hotel operators.
