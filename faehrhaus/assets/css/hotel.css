@@ -1,175 +1,124 @@
 /*
  * FÄHRHAUS SYLT – hotelspezifische Stile gemäß CI
- * Farbe: Pantone 432 → #2D393B
- * Typo: Futura (Light/Book/Medium). Falls nicht lizenziert: System-Fallbacks.
  */
 
-/* ====== Typografie ====== */
 @font-face {
-  /* Optional: Wenn ihr eine lizenzierte Futura-Datei hostet, hier einbinden.
-     Andernfalls greifen die Fallbacks. */
   font-family: "FuturaCustom";
   src: url("../fonts/Futura-Book.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
+
 :root {
-  --fh-ink: #2D393B;            /* Primärschrift-/Linienfarbe */
-  --fh-ink-80: rgba(45,57,59,.8);
-  --fh-ink-20: rgba(45,57,59,.2);
-  --fh-accent: #2D393B;         /* Akzent bleibt tonal */
-  --fh-bg: rgb(45,57,59);             /* grauer Hintergrund */
-  --fh-bubble-user: #2D393B;    /* User-Blase dunkel (negativ, weiße Schrift) */
-  --fh-bubble-bot: #F3F5F5;     /* Sehr helles Grau mit leichter Blaugrün-Note */
-  --fh-focus: #2D393B;
+  /* Essenzielle CI-Farben */
+  --fh-ink: #2d393b;
+  --fh-foam: #f3f5f5;
+  --fh-snow: #ffffff;
+
+  --chat-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --chat-text-color: var(--fh-ink);
+
+  --chat-background-image: url('../images/background.jpg');
+  --chat-background-attachment: fixed;
+
+  --chat-primary-color: var(--fh-ink);
+  --chat-primary-text-color: var(--fh-snow);
+  --chat-link-color: var(--fh-ink);
+
+  --chat-box-background: color-mix(in srgb, var(--fh-ink) 90%, #000 10%);
+  --chat-box-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
+  --chat-box-border-radius: 14px;
+  --chat-box-shadow: 0 8px 28px color-mix(in srgb, var(--fh-ink) 30%, transparent);
+
+  --chat-header-background: transparent;
+  --chat-header-padding: 6px 0 10px;
+  --chat-header-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
+  --chat-logo-max-width: 220px;
+  --chat-claim-color: color-mix(in srgb, var(--fh-snow) 30%, var(--fh-ink) 70%);
+  --chat-claim-letter-spacing: 0.18em;
+
+  --chat-log-background: var(--fh-snow);
+  --chat-log-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
+  --chat-log-border-radius: 10px;
+  --chat-bubble-max-width: 78%;
+  --chat-bubble-padding: 10px 14px;
+  --chat-bubble-border-radius: 14px;
+  --chat-bubble-font-size: 14.5px;
+  --chat-bubble-letter-spacing: 0.02em;
+  --chat-bubble-line-height: 1.5;
+  --chat-bot-bubble-color: var(--fh-foam);
+  --chat-bot-bubble-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
+  --chat-user-bubble-color: var(--fh-ink);
+  --chat-user-text-color: var(--fh-snow);
+  --chat-user-letter-spacing: 0.03em;
+  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--fh-ink) 70%, #000 30%);
+
+  --chat-input-border: 1px solid color-mix(in srgb, var(--fh-ink) 20%, transparent);
+  --chat-input-border-radius: 10px;
+  --chat-input-padding: 12px 14px;
+  --chat-input-font-size: 15px;
+  --chat-input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--fh-ink) 30%, transparent);
+  --chat-input-focus-border-color: var(--fh-ink);
+
+  --chat-privacy-color: var(--fh-snow);
+
+  --chat-button-background: var(--fh-snow);
+  --chat-button-color: var(--fh-ink);
+  --chat-button-border: 1px solid transparent;
+  --chat-button-border-radius: 10px;
+  --chat-button-padding: 10px 14px;
+  --chat-button-letter-spacing: 0.06em;
+  --chat-button-disabled-background: color-mix(in srgb, var(--fh-ink) 35%, var(--fh-snow) 65%);
+  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--fh-ink) 35%, var(--fh-snow) 65%);
+
+  --chat-return-link-background: color-mix(in srgb, var(--fh-ink) 85%, transparent);
+  --chat-return-link-border: 1px solid color-mix(in srgb, var(--fh-ink) 70%, #000 30%);
 }
 
-html, body {
-  font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: var(--fh-ink);
-  background: url('../images/background.jpg') no-repeat center center fixed !important;
-  background-size: cover !important;
+body {
+  background-image: url('../images/background.jpg') !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-/* Grundlayout (Core überschreiben) */
-.chat-box {
-  background: var(--fh-bg);
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.12);
-  border: 1px solid var(--fh-ink-20);
-}
-
-/* Header mit Logo + optionalem Claim */
-.chat-box header {
-  padding: 6px 0 10px;
-  border-bottom: 1px solid var(--fh-ink-20);
-  margin-bottom: 10px;
-}
 .chat-box header img {
-  max-width: 220px;
-  height: auto;
-  display: block;
-  margin: 0 auto 6px auto;
-  filter: none; /* Logo unverfälscht anzeigen */
-}
-.brand-claim {
-  font-size: 10px;
-  letter-spacing: .18em;      /* Headlines 100–200 → 0.10–0.20em */
-  text-align: center;
-  color: var(--fh-ink-80);
-  margin-top: 2px;
+  filter: none;
 }
 
-/* Chatbereich */
-#chat-log {
-  background: #fff;
-  border: 1px solid var(--fh-ink-20);
-  border-radius: 10px;
+h1,
+h2,
+h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 500;
 }
 
-/* Bubbles – links (Bot) / rechts (User) im Messenger-Stil */
-.msg { display: flex; width: 100%; }
-.msg .bubble {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  font-size: 14.5px;           /* Fließtext ~12pt → ca. 16px; hier minimal kleiner, wirkt eleganter */
-  letter-spacing: .02em;       /* Fließtext Laufweite ~50 → ~0.05em; wir gehen moderat */
-}
-
-/* Bot (links, positiv) */
-.msg.bot { justify-content: flex-start; }
-.msg.bot .bubble {
-  background: var(--fh-bubble-bot);
-  color: var(--fh-ink);
-  border-top-left-radius: 4px;
-  border: 1px solid var(--fh-ink-20);
-}
-
-/* User (rechts, negativ) */
-.msg.user { justify-content: flex-end; }
-.msg.user .bubble {
-  background: var(--fh-bubble-user);
-  color: #fff;
-  border-top-right-radius: 4px;
-  letter-spacing: .03em;       /* etwas mehr Tracking für Negativschrift */
-  text-align: right;
-  border: 1px solid var(--fh-ink);
-}
-
-/* Labels „Max:“ / „Du:“ zurückhaltend (Book/Medium) */
-.msg .bubble strong {
-  letter-spacing: .05em;
-  font-weight: 500;            /* Medium */
-  display: inline-block;
-  margin-right: .35em;
-  opacity: .9;
-}
-
-/* Eingabe + Buttons */
-.chat-controls input[type="text"] {
-  border: 1px solid var(--fh-ink-20);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 15px;
-  letter-spacing: .02em;
-}
-.chat-controls input[type="text"]:focus {
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fh-focus) 30%, transparent);
-  border-color: var(--fh-focus);
-}
-.chat-controls .privacy {
-  color: white;
-}
-.chat-controls button {
-  background: #fff;
-  color: var(--fh-ink);
-  border-radius: 10px;
-  padding: 10px 14px;
-  letter-spacing: .06em;       /* leichter „Button“-Look */
-}
-.chat-controls button:disabled {
-  background: #9AA3A5;
-}
-
-/* Sekundäre Elemente */
-.return-link {
-  background: rgba(45,57,59, .85);
-  border: 1px solid var(--fh-ink);
-}
-
-/* Kleintypografie im Log (Links, Listen) */
 #chat-log a {
-  color: var(--fh-ink);
   text-decoration-thickness: 1px;
 }
-#chat-log ul { padding-left: 1.2em; }
 
-/* Headline-Typo – falls irgendwo Überschriften auftauchen */
-h1, h2, h3 {
-  text-transform: uppercase; 
-  letter-spacing: .14em;      /* 100–200 → 0.10–0.20em, mittig gewählt */
-  font-weight: 500;           /* Book/Medium */
+.brand-claim {
+  text-align: center;
 }
 
 .privacy-box .privacy-content h1 {
   margin: 0 0 16px;
   font-size: 26px;
-  color: #fff;
+  color: var(--fh-snow);
 }
 
 .privacy-box .privacy-content h2 {
   margin: 24px 0 8px;
   font-size: 18px;
-  color: #c2c2c2ff;
+  color: color-mix(in srgb, var(--fh-snow) 65%, var(--fh-ink) 35%);
 }
 
 .privacy-box .privacy-content p,
 .privacy-box .privacy-content ul,
 .privacy-box .privacy-content address {
-  color: #e4e4e4ff;
+  color: color-mix(in srgb, var(--fh-snow) 80%, var(--fh-ink) 20%);
   margin: 0 0 12px;
 }

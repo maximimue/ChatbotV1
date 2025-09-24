@@ -1,146 +1,95 @@
 /*
  * AARNHOOG – hotelspezifische Stile
- * Annahme: Logo ist WEISS (transparent) → dunkler Header-Hintergrund.
- * Farbschema: ruhiges Nordsee-Teal als Primärfarbe, warmes Offwhite als Fläche.
+ * Individuelle Farben, Typografie und Detailanpassungen.
  */
 
-:root{
-  --ah-ink: #123C48;           /* dunkles Blaugrün für Texte, Linien */
-  --ah-ink-80: rgba(18,60,72,.85);
-  --ah-ink-20: rgba(18,60,72,.2);
-  --ah-brand: #0F6E8F;         /* Aarnhoog Akzent/Brand (Teal) */
-  --ah-bg: #FFFFFF;            /* Grundfläche */
-  --ah-bubble-user: #0F6E8F;   /* User-Bubble (negativ/weiß) */
-  --ah-bubble-bot: #F1F6F7;    /* sehr hell, leicht bläulich */
-  --ah-header: #0D2C33;        /* sehr dunkler Header für weißes Logo */
-  --ah-focus: #0F6E8F;
+:root {
+  /* Kompakte Farbpalette für Aarnhoog */
+  --ah-ink: #123c48;
+  --ah-midnight: #0d2c33;
+  --ah-ocean: #0f6e8f;
+  --ah-foam: #f1f6f7;
+  --ah-white: #ffffff;
+
+  --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --chat-text-color: var(--ah-ink);
+
+  --chat-background-image: url('../images/background.jpg');
+  --chat-background-attachment: fixed;
+
+  --chat-primary-color: var(--ah-ocean);
+  --chat-primary-text-color: var(--ah-white);
+  --chat-link-color: var(--ah-ocean);
+
+  --chat-box-background: var(--ah-white);
+  --chat-box-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
+  --chat-box-border-radius: 14px;
+  --chat-box-shadow: 0 8px 28px color-mix(in srgb, var(--ah-midnight) 30%, transparent);
+  --chat-box-overflow: hidden;
+
+  --chat-header-background: var(--ah-midnight);
+  --chat-header-padding: 14px 0 12px;
+  --chat-header-border: 1px solid color-mix(in srgb, var(--ah-white) 12%, transparent);
+  --chat-logo-max-width: 210px;
+  --chat-claim-color: color-mix(in srgb, var(--ah-white) 90%, var(--ah-ink) 10%);
+
+  --chat-log-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
+  --chat-log-border-radius: 10px;
+  --chat-log-gap: 8px;
+
+  --chat-bubble-max-width: 78%;
+  --chat-bubble-padding: 10px 14px;
+  --chat-bubble-border-radius: 14px;
+  --chat-bubble-letter-spacing: 0.01em;
+  --chat-bubble-line-height: 1.5;
+  --chat-bot-bubble-color: var(--ah-foam);
+  --chat-bot-text-color: var(--ah-ink);
+  --chat-bot-bubble-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
+  --chat-user-bubble-color: var(--ah-ocean);
+  --chat-user-text-color: var(--ah-white);
+  --chat-user-bubble-border: 1px solid color-mix(in srgb, var(--ah-ocean) 65%, var(--ah-midnight) 35%);
+
+  --chat-input-border: 1px solid color-mix(in srgb, var(--ah-ink) 20%, transparent);
+  --chat-input-border-radius: 10px;
+  --chat-input-padding: 12px 14px;
+  --chat-input-font-size: 15px;
+  --chat-input-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--ah-ocean) 25%, transparent);
+  --chat-input-focus-border-color: var(--ah-ocean);
+
+  --chat-privacy-color: color-mix(in srgb, var(--ah-ink) 75%, transparent);
+
+  --chat-button-background: var(--ah-ocean);
+  --chat-button-border: 1px solid color-mix(in srgb, var(--ah-ocean) 65%, var(--ah-midnight) 35%);
+  --chat-button-border-radius: 10px;
+  --chat-button-padding: 10px 14px;
+  --chat-button-letter-spacing: 0.03em;
+  --chat-button-disabled-background: color-mix(in srgb, var(--ah-ocean) 35%, var(--ah-white) 65%);
+  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--ah-ocean) 35%, var(--ah-white) 65%);
+
+  --chat-return-link-background: color-mix(in srgb, var(--ah-ocean) 90%, transparent);
+  --chat-return-link-border: 1px solid color-mix(in srgb, var(--ah-ocean) 65%, var(--ah-midnight) 35%);
 }
 
-/* Typo: eleganter Sans-Serif-Fallback; wenn ihr Branding-Fonts habt, hier einbinden */
-html, body{
-  font-family: "Avenir Next","Helvetica Neue",Arial,sans-serif;
-  color: var(--ah-ink);
-  background: url('../images/background.jpg') no-repeat center center fixed!important;
-  background-size: cover !important;
+body {
+  background-image: url('../images/background.jpg') !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-
-
-/* Chat-Container */
-.chat-box{
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.10);
-  border: 1px solid var(--ah-ink-20);
-  overflow: hidden; /* damit Header oben bündig ist */
+.chat-box header img {
+  filter: none;
 }
 
-/* Header mit dunklem Balken für weißes Logo */
-.chat-box header{
-  background: var(--ah-header);
-  padding: 14px 0 12px;
-  border-bottom: 1px solid rgba(255,255,255,.12);
-  margin-bottom: 10px;
-  text-align: center;
-}
-.chat-box header img{
-  max-width: 210px;
-  height: auto;
-  display: inline-block;
-  filter: none; /* weißes Logo unverändert */
-}
-
-/* Optionaler Claim unter dem Logo (falls gewünscht) */
-.brand-claim{
-  color: rgba(255,255,255,.9);
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-/* Chatbereich */
-#chat-log{
-  background: #fff;
-  border: 1px solid var(--ah-ink-20);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-}
-
-/* Bubbles – Bot links, User rechts */
-.msg{ display:flex; width:100%; }
-.msg .bubble{
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  font-size: 15px;
-  letter-spacing: .01em;
-}
-
-/* Bot (links, positiv) */
-.msg.bot{ justify-content:flex-start; }
-.msg.bot .bubble{
-  background: var(--ah-bubble-bot);
-  color: var(--ah-ink);
-  border-top-left-radius: 4px;
-  border: 1px solid var(--ah-ink-20);
-}
-
-/* User (rechts, negativ/weiß) */
-.msg.user{ justify-content:flex-end; }
-.msg.user .bubble{
-  background: var(--ah-bubble-user);
-  color: #fff;
-  border-top-right-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--ah-bubble-user) 70%, #000 30%);
-  text-align: right;
-}
-
-/* Labels „Max:“ / „Du:“ zurückhaltend */
-.msg .bubble strong{
+/* Spezifische Mikrotypografie */
+.msg .bubble strong {
   font-weight: 600;
-  letter-spacing: .04em;
-  opacity: .95;
-  margin-right: .35em;
+  letter-spacing: 0.04em;
+  opacity: 0.95;
+  margin-right: 0.35em;
 }
 
-/* Eingabe & Buttons */
-.chat-controls input[type="text"]{
-  border: 1px solid var(--ah-ink-20);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 15px;
+#chat-log a {
+  text-decoration-thickness: 1px;
 }
-.chat-controls input[type="text"]:focus{
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ah-focus) 25%, transparent);
-  border-color: var(--ah-focus);
-}
-.chat-controls .privacy{ color: var(--ah-ink-80); }
-.chat-controls button{
-  background: var(--ah-brand);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px 14px;
-  letter-spacing: .03em;
-  border: 1px solid color-mix(in srgb, var(--ah-brand) 70%, #000 30%);
-}
-.chat-controls button:disabled{
-  background: #9FB8C1;
-  border-color: #9FB8C1;
-}
-
-/* „Zurück zur Website“-Button */
-.return-link{
-  background: rgba(15,110,143,.9);
-  border: 1px solid color-mix(in srgb, var(--ah-brand) 70%, #000 30%);
-  color: #fff;
-}
-
-/* Links im Chat */
-#chat-log a{ color: var(--ah-brand); text-decoration-thickness: 1px; }
-#chat-log ul{ padding-left: 1.2em; }
