@@ -1,140 +1,39 @@
-:root{
-  --ah-ink: #000;           /* dunkles Blaugrün für Texte, Linien */
-  --ah-ink-80: #ae2a23ce;
-  --ah-ink-20: #ae2a234a;
-  --ah-brand: #ae2b23;         /* Hotel Roth Akzent/Brand (Teal) */
-  --ah-bg: #FFFFFF;            /* Grundfläche */
-  --ah-bubble-user: #ae2b23;   /* User-Bubble (negativ/weiß) */
-  --ah-bubble-bot: #F1F6F7;    /* sehr hell, leicht bläulich */
-  --ah-header: #ae2b23;        /* sehr dunkler Header für weißes Logo */
-  --ah-focus: #ae2b23;
+/*
+ * HOTEL ROTH – individuelle Farben und Typografie
+ */
+
+:root {
+  /* Roth setzt auf kräftiges Rot und klare Kontraste */
+  --theme-color-base: #f1f6f7;
+  --theme-color-surface: #ffffff;
+  --theme-color-primary: #ae2b23;
+  --theme-color-primary-contrast: #ffffff;
+  --theme-color-text: #000000;
+
+  --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --chat-background-image: url('../images/background.jpg');
+  --chat-background-attachment: fixed;
 }
 
-/* Typo: eleganter Sans-Serif-Fallback; wenn ihr Branding-Fonts habt, hier einbinden */
-html, body{
-  font-family: "Avenir Next","Helvetica Neue",Arial,sans-serif;
-  color: var(--ah-ink);
-  background: url('../images/background.jpg') no-repeat center center fixed!important;
-  background-size: cover !important;
+body {
+  background-image: var(--chat-background-image) !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-
-
-/* Chat-Container */
-.chat-box{
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.10);
-  border: 1px solid var(--ah-ink-20);
-  overflow: hidden; /* damit Header oben bündig ist */
+.chat-box header img {
+  filter: none;
 }
 
-/* Header mit dunklem Balken für weißes Logo */
-.chat-box header{
-  background: var(--ah-header);
-  padding: 14px 0 12px;
-  border-bottom: 1px solid rgba(255,255,255,.12);
-  margin-bottom: 10px;
-  text-align: center;
-}
-.chat-box header img{
-  max-width: 210px;
-  height: auto;
-  display: inline-block;
-  filter: none; /* weißes Logo unverändert */
-}
-
-/* Optionaler Claim unter dem Logo (falls gewünscht) */
-.brand-claim{
-  color: rgba(255,255,255,.9);
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-/* Chatbereich */
-#chat-log{
-  background: #fff;
-  border: 1px solid var(--ah-ink-20);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-}
-
-/* Bubbles – Bot links, User rechts */
-.msg{ display:flex; width:100%; }
-.msg .bubble{
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  font-size: 15px;
-  letter-spacing: .01em;
-}
-
-/* Bot (links, positiv) */
-.msg.bot{ justify-content:flex-start; }
-.msg.bot .bubble{
-  background: var(--ah-bubble-bot);
-  color: var(--ah-ink);
-  border-top-left-radius: 4px;
-  border: 1px solid var(--ah-ink-20);
-}
-
-/* User (rechts, negativ/weiß) */
-.msg.user{ justify-content:flex-end; }
-.msg.user .bubble{
-  background: var(--ah-bubble-user);
-  color: #fff;
-  border-top-right-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--ah-bubble-user) 70%, #000 30%);
-  text-align: right;
-}
-
-/* Labels „Max:“ / „Du:“ zurückhaltend */
-.msg .bubble strong{
+.msg .bubble strong {
   font-weight: 600;
-  letter-spacing: .04em;
-  opacity: .95;
-  margin-right: .35em;
+  letter-spacing: 0.04em;
+  opacity: 0.95;
+  margin-right: 0.35em;
 }
 
-/* Eingabe & Buttons */
-.chat-controls input[type="text"]{
-  border: 1px solid var(--ah-ink-20);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 15px;
+#chat-log a {
+  text-decoration-thickness: 1px;
 }
-.chat-controls input[type="text"]:focus{
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ah-focus) 25%, transparent);
-  border-color: var(--ah-focus);
-}
-.chat-controls .privacy{ color: var(--ah-ink-80); }
-.chat-controls button{
-  background: var(--ah-brand);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px 14px;
-  letter-spacing: .03em;
-  border: 1px solid color-mix(in srgb, var(--ah-brand) 70%, #000 30%);
-}
-.chat-controls button:disabled{
-  background: #9FB8C1;
-  border-color: #9FB8C1;
-}
-
-/* „Zurück zur Website“-Button */
-.return-link{
-  background: rgba(15,110,143,.9);
-  border: 1px solid color-mix(in srgb, var(--ah-brand) 70%, #000 30%);
-  color: #fff;
-}
-
-/* Links im Chat */
-#chat-log a{ color: var(--ah-brand); text-decoration-thickness: 1px; }
-#chat-log ul{ padding-left: 1.2em; }
