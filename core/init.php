@@ -106,6 +106,22 @@ if (!function_exists('chatbot_asset_url')) {
         }
 
         if ($value[0] === '/') {
+            if ($hotelBasePath) {
+                $baseReal = realpath($hotelBasePath) ?: $hotelBasePath;
+                $normalizedBase = str_replace('\\', '/', rtrim($baseReal, '/\\')) . '/';
+
+                $valueReal = realpath($value);
+                $normalizedAbsolute = $valueReal !== false
+                    ? str_replace('\\', '/', $valueReal)
+                    : str_replace('\\', '/', $value);
+
+                if (strpos($normalizedAbsolute, $normalizedBase) === 0) {
+                    $relative = substr($normalizedAbsolute, strlen($normalizedBase));
+                    $relative = ltrim($relative, '/');
+                    return $relative === '' ? basename($normalizedAbsolute) : $relative;
+                }
+            }
+
             return $value;
         }
 
