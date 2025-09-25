@@ -464,9 +464,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'save_settings') {
         $activeTab = 'settings';
         $postedSettings = isset($_POST['settings']) && is_array($_POST['settings']) ? $_POST['settings'] : [];
+        $assetUploadMap = [
+            'logo_upload' => [
+                'config_key' => 'LOGO_PATH',
+                'label' => 'Logo',
+            ],
+            'background_upload' => [
+                'config_key' => 'BACKGROUND_IMAGE_URL',
+                'label' => 'Hintergrundbild',
+            ],
+        ];
+        $assetManagedKeys = array_map(
+            static fn(array $meta) => (string)($meta['config_key'] ?? ''),
+            $assetUploadMap
+        );
+
         $newSettings = [];
         foreach ($settingsValues as $key => $current) {
-            $value = isset($postedSettings[$key]) ? trim((string)$postedSettings[$key]) : '';
+            if (array_key_exists($key, $postedSettings)) {
+                $value = trim((string)$postedSettings[$key]);
+            } elseif (in_array($key, $assetManagedKeys, true)) {
+                $value = $current;
+            } else {
+                $value = '';
+            }
 
             if (in_array($key, $themeSettingKeys, true)) {
                 $normalized = admin_normalize_hex_color($value);
@@ -482,17 +503,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $settingsValues[$key] = $value;
             $newSettings[$key] = $value;
         }
-
-        $assetUploadMap = [
-            'logo_upload' => [
-                'config_key' => 'LOGO_PATH',
-                'label' => 'Logo',
-            ],
-            'background_upload' => [
-                'config_key' => 'BACKGROUND_IMAGE_URL',
-                'label' => 'Hintergrundbild',
-            ],
-        ];
 
         $uploadBasePath = isset($HOTEL_BASE_PATH) && is_string($HOTEL_BASE_PATH) ? $HOTEL_BASE_PATH : null;
         foreach ($assetUploadMap as $fieldName => $meta) {
@@ -704,11 +714,6 @@ $backgroundPreviewUrl = chatbot_asset_url($settingsValues['BACKGROUND_IMAGE_URL'
                 <input type="text" name="settings[BOT_NAME]" value="<?php echo htmlspecialchars($settingsValues['BOT_NAME']); ?>">
               </label>
               <label class="field">
-                <span>Logo-Pfad</span>
-                <input type="text" name="settings[LOGO_PATH]" value="<?php echo htmlspecialchars($settingsValues['LOGO_PATH']); ?>" placeholder="logo.png oder URL">
-                <small class="muted">Optional: relativer Pfad oder vollständige URL.</small>
-              </label>
-              <label class="field">
                 <span>Logo-Datei hochladen</span>
                 <?php if ($logoPreviewUrl): ?>
                   <div class="asset-preview asset-preview--logo" style="margin-bottom: 0.5rem;">
@@ -716,7 +721,7 @@ $backgroundPreviewUrl = chatbot_asset_url($settingsValues['BACKGROUND_IMAGE_URL'
                   </div>
                 <?php endif; ?>
                 <input type="file" name="logo_upload" accept="image/*">
-                <small class="muted">Unterstützte Formate: PNG, JPG, GIF, WebP, SVG.</small>
+                <small class="muted">Unterstützte Formate: PNG, JPG, GIF, WebP, SVG. Bereits hochgeladene Logos bleiben erhalten, solange kein neues Bild ausgewählt wird.</small>
               </label>
             </div>
             <label class="field">
@@ -727,20 +732,15 @@ $backgroundPreviewUrl = chatbot_asset_url($settingsValues['BACKGROUND_IMAGE_URL'
 
           <div class="card">
             <h2>Design &amp; Branding</h2>
-            <p class="muted">Steuern Sie Hintergrundbild und Farbwerte. Relative Pfade beziehen sich auf den Hotelordner.</p>
+            <p class="muted">Steuern Sie Hintergrundbild und Farbwerte. Verwenden Sie den Upload, um ein neues Bild festzulegen.</p>
             <div class="grid two-cols">
-              <label class="field">
-                <span>Hintergrundbild (optional)</span>
-                <input type="text" name="settings[BACKGROUND_IMAGE_URL]" value="<?php echo htmlspecialchars($settingsValues['BACKGROUND_IMAGE_URL']); ?>" placeholder="assets/images/background.jpg">
-                <small class="muted">Sie können auch unten eine Datei hochladen.</small>
-              </label>
-              <label class="field">
+              <label class="field" style="grid-column: span 2;">
                 <span>Hintergrund-Datei hochladen</span>
                 <?php if ($backgroundPreviewUrl): ?>
                   <div class="asset-preview asset-preview--background" style="margin-bottom: 0.5rem; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 0.5rem; width: 100%; max-width: 260px; height: 120px; background: #f8fafc center/cover no-repeat url('<?php echo htmlspecialchars($backgroundPreviewUrl, ENT_QUOTES); ?>');"></div>
                 <?php endif; ?>
                 <input type="file" name="background_upload" accept="image/*">
-                <small class="muted">Unterstützte Formate: PNG, JPG, GIF, WebP, SVG.</small>
+                <small class="muted">Unterstützte Formate: PNG, JPG, GIF, WebP, SVG. Bereits hochgeladene Hintergründe bleiben erhalten, solange kein neues Bild ausgewählt wird.</small>
               </label>
               <label class="field">
                 <span>Grundfarbe (Base)</span>
