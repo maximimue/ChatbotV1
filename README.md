@@ -66,8 +66,6 @@ manually when automating deployments. The most commonly adjusted keys are:
   `THEME_COLOR_PRIMARY`, `THEME_COLOR_PRIMARY_CONTRAST`, and
   `THEME_COLOR_TEXT` feed the core design tokens that all other chat colors are
   derived from.【F:core/config.sample.php†L20-L40】【F:core/admin.php†L92-L140】
-  Legacy `CHAT_*` keys remain supported for older hotel configs but are no
-  longer surfaced in the admin UI.【F:core/config.sample.php†L32-L40】【F:core/admin.php†L128-L140】
 
 Changes made via the admin UI are persisted in `config.php`; editing the file by hand
 is useful when seeding defaults before handing access to hotel operators.

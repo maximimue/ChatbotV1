@@ -70,21 +70,8 @@ $chatbotThemeDefaults = [
     'THEME_COLOR_TEXT'              => '#0F172A',
 ];
 
-$chatbotThemeLegacyMap = [
-    'THEME_COLOR_BASE'             => isset($CHAT_BACKGROUND_COLOR) ? (string)$CHAT_BACKGROUND_COLOR : null,
-    'THEME_COLOR_SURFACE'          => isset($CHAT_BOX_BACKGROUND_COLOR) ? (string)$CHAT_BOX_BACKGROUND_COLOR : null,
-    'THEME_COLOR_PRIMARY'          => isset($CHAT_PRIMARY_COLOR) ? (string)$CHAT_PRIMARY_COLOR : null,
-    'THEME_COLOR_PRIMARY_CONTRAST' => isset($CHAT_PRIMARY_TEXT_COLOR) ? (string)$CHAT_PRIMARY_TEXT_COLOR : null,
-    'THEME_COLOR_TEXT'             => isset($CHAT_BOT_TEXT_COLOR) ? (string)$CHAT_BOT_TEXT_COLOR : null,
-];
-
 foreach ($chatbotThemeDefaults as $themeKey => $defaultHex) {
     $explicit = isset(${$themeKey}) ? chatbot_normalize_hex_color((string)${$themeKey}) : null;
-
-    if ($explicit === null) {
-        $legacy = $chatbotThemeLegacyMap[$themeKey] ?? null;
-        $explicit = chatbot_normalize_hex_color(is_string($legacy) ? $legacy : null);
-    }
 
     if ($explicit === null) {
         $explicit = $defaultHex;

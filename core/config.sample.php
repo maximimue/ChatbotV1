@@ -27,18 +27,6 @@ $THEME_COLOR_PRIMARY = '#003366';
 $THEME_COLOR_PRIMARY_CONTRAST = '#FFFFFF';
 $THEME_COLOR_TEXT = '#0F172A';
 
-// Legacy: Ältere Installationen nutzten detaillierte CHAT_* Konstanten.
-// Diese werden automatisch auf die THEME_COLOR_* Werte abgebildet, können aber entfernt werden.
-// $CHAT_BACKGROUND_COLOR      = '#f0f0f0';
-// $CHAT_BOX_BACKGROUND_COLOR  = '#808080';
-// $CHAT_PRIMARY_COLOR         = '#003366';
-// $CHAT_PRIMARY_TEXT_COLOR    = '#ffffff';
-// $CHAT_USER_BUBBLE_COLOR     = '#0078d7';
-// $CHAT_USER_TEXT_COLOR       = '#ffffff';
-// $CHAT_BOT_BUBBLE_COLOR      = '#f0f0f0';
-// $CHAT_BOT_TEXT_COLOR        = '#000000';
-// $CHAT_LINK_COLOR            = '#003366';
-
 // Pfad zur FAQ‑Markdown‑Datei, die die Wissensbasis für das Hotel enthält.
 $FAQ_FILE = __DIR__ . '/data/faq.md';
 
