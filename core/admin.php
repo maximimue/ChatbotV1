@@ -9,6 +9,114 @@ require_once __DIR__ . '/analytics_helpers.php';
 require_once __DIR__ . '/admin_accounts.php';
 
 /**
+ * Validiert und verschiebt ein hochgeladenes Asset in das Upload-Verzeichnis.
+ *
+ * @param array<string,mixed> $fileData
+ * @param string|null $hotelBasePath
+ * @param string $targetSubdir
+ * @param string $label
+ * @param array<int,string> $errors
+ * @return string|null
+ */
+function admin_handle_asset_upload(array $fileData, ?string $hotelBasePath, string $targetSubdir, string $label, array &$errors): ?string
+{
+    $errorCode = isset($fileData['error']) ? (int)$fileData['error'] : UPLOAD_ERR_NO_FILE;
+    if ($errorCode === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($errorCode !== UPLOAD_ERR_OK) {
+        $errors[] = sprintf('%s konnte nicht hochgeladen werden (Fehlercode %d).', $label, $errorCode);
+        return null;
+    }
+
+    $tmpName = isset($fileData['tmp_name']) ? (string)$fileData['tmp_name'] : '';
+    if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+        $errors[] = sprintf('Ungültiger Upload für %s.', $label);
+        return null;
+    }
+
+    if (!$hotelBasePath || !is_string($hotelBasePath)) {
+        $errors[] = sprintf('Upload-Verzeichnis für %s konnte nicht ermittelt werden.', $label);
+        return null;
+    }
+
+    $allowedMimeMap = [
+        'image/png'      => 'png',
+        'image/jpeg'     => 'jpg',
+        'image/pjpeg'    => 'jpg',
+        'image/gif'      => 'gif',
+        'image/webp'     => 'webp',
+        'image/svg+xml'  => 'svg',
+    ];
+
+    $mime = null;
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo !== false) {
+            $mime = finfo_file($finfo, $tmpName) ?: null;
+            finfo_close($finfo);
+        }
+    }
+
+    if ($mime === null && function_exists('mime_content_type')) {
+        $mime = @mime_content_type($tmpName) ?: null;
+    }
+
+    if ($mime === null) {
+        $imageInfo = @getimagesize($tmpName);
+        if (is_array($imageInfo) && isset($imageInfo['mime'])) {
+            $mime = (string)$imageInfo['mime'];
+        }
+    }
+
+    if ($mime === null || !isset($allowedMimeMap[$mime])) {
+        $errors[] = sprintf('%s muss ein Bild im Format PNG, JPG, GIF, WebP oder SVG sein.', $label);
+        return null;
+    }
+
+    $extension = $allowedMimeMap[$mime];
+
+    $originalName = isset($fileData['name']) ? (string)$fileData['name'] : '';
+    $baseName = trim((string)pathinfo($originalName, PATHINFO_FILENAME));
+    if ($baseName === '') {
+        $baseName = strtolower(preg_replace('/\s+/', '-', $label));
+    }
+
+    $slug = strtolower(trim(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $baseName), '-'));
+    if ($slug === '') {
+        $slug = 'asset';
+    }
+
+    try {
+        $randomSuffix = bin2hex(random_bytes(6));
+    } catch (Exception $e) {
+        $randomSuffix = bin2hex(pack('N', mt_rand()));
+    }
+
+    $targetDirectory = rtrim($hotelBasePath, '/\\') . '/' . trim($targetSubdir, '/\\');
+    if (!is_dir($targetDirectory)) {
+        if (!@mkdir($targetDirectory, 0775, true) && !is_dir($targetDirectory)) {
+            $errors[] = sprintf('Upload-Verzeichnis konnte nicht erstellt werden (%s).', $targetDirectory);
+            return null;
+        }
+    }
+
+    $fileName = $slug . '-' . date('Ymd-His') . '-' . substr($randomSuffix, 0, 12) . '.' . $extension;
+    $targetPath = $targetDirectory . '/' . $fileName;
+
+    if (!@move_uploaded_file($tmpName, $targetPath)) {
+        $errors[] = sprintf('%s konnte nicht gespeichert werden.', $label);
+        return null;
+    }
+
+    @chmod($targetPath, 0644);
+
+    $relativeDirectory = trim($targetSubdir, '/\\');
+    return ($relativeDirectory !== '' ? $relativeDirectory . '/' : '') . $fileName;
+}
+
+/**
  * Filtert Flash-Meldungen für einen Tab.
  *
  * @param array<int,array<string,mixed>> $messages
@@ -274,6 +382,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newSettings[$key] = $value;
         }
 
+        $assetUploadMap = [
+            'logo_upload' => [
+                'config_key' => 'LOGO_PATH',
+                'label' => 'Logo',
+            ],
+            'background_upload' => [
+                'config_key' => 'BACKGROUND_IMAGE_URL',
+                'label' => 'Hintergrundbild',
+            ],
+        ];
+
+        $uploadBasePath = isset($HOTEL_BASE_PATH) && is_string($HOTEL_BASE_PATH) ? $HOTEL_BASE_PATH : null;
+        foreach ($assetUploadMap as $fieldName => $meta) {
+            if (!isset($_FILES[$fieldName]) || !is_array($_FILES[$fieldName])) {
+                continue;
+            }
+
+            $uploadedPath = admin_handle_asset_upload(
+                $_FILES[$fieldName],
+                $uploadBasePath,
+                'assets/uploads',
+                (string)$meta['label'],
+                $settingsErrors
+            );
+
+            if ($uploadedPath !== null) {
+                $configKey = (string)$meta['config_key'];
+                $settingsValues[$configKey] = $uploadedPath;
+                $newSettings[$configKey] = $uploadedPath;
+            }
+        }
+
         $accountsPost = isset($_POST['accounts']) && is_array($_POST['accounts']) ? $_POST['accounts'] : [];
         $accountsFormData = [];
         $normalizedAccounts = [];
@@ -374,6 +514,8 @@ $analysisTabUrl = 'admin.php?tab=analysis' . ($analysisFiltersQuery ? '&' . $ana
 
 $faqFlash = admin_filter_flash($flashMessages, 'faq');
 $settingsFlash = admin_filter_flash($flashMessages, 'settings');
+$logoPreviewUrl = chatbot_asset_url($settingsValues['LOGO_PATH'] ?? null, $HOTEL_BASE_PATH ?? null);
+$backgroundPreviewUrl = chatbot_asset_url($settingsValues['BACKGROUND_IMAGE_URL'] ?? null, $HOTEL_BASE_PATH ?? null);
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -431,7 +573,7 @@ $settingsFlash = admin_filter_flash($flashMessages, 'settings');
       </section>
 
       <section class="tab-panel <?php echo $activeTab === 'settings' ? 'active' : ''; ?>" id="panel-settings">
-        <form method="post" class="stacked-form settings-form">
+        <form method="post" class="stacked-form settings-form" enctype="multipart/form-data">
           <input type="hidden" name="action" value="save_settings">
           <div class="card">
             <h2>Allgemeine Einstellungen</h2>
@@ -463,6 +605,17 @@ $settingsFlash = admin_filter_flash($flashMessages, 'settings');
               <label class="field">
                 <span>Logo-Pfad</span>
                 <input type="text" name="settings[LOGO_PATH]" value="<?php echo htmlspecialchars($settingsValues['LOGO_PATH']); ?>" placeholder="logo.png oder URL">
+                <small class="muted">Optional: relativer Pfad oder vollständige URL.</small>
+              </label>
+              <label class="field">
+                <span>Logo-Datei hochladen</span>
+                <?php if ($logoPreviewUrl): ?>
+                  <div class="asset-preview asset-preview--logo" style="margin-bottom: 0.5rem;">
+                    <img src="<?php echo htmlspecialchars($logoPreviewUrl); ?>" alt="Aktuelles Logo" style="max-height: 80px; max-width: 200px; object-fit: contain;">
+                  </div>
+                <?php endif; ?>
+                <input type="file" name="logo_upload" accept="image/*">
+                <small class="muted">Unterstützte Formate: PNG, JPG, GIF, WebP, SVG.</small>
               </label>
             </div>
             <label class="field">
@@ -478,6 +631,15 @@ $settingsFlash = admin_filter_flash($flashMessages, 'settings');
               <label class="field">
                 <span>Hintergrundbild (optional)</span>
                 <input type="text" name="settings[BACKGROUND_IMAGE_URL]" value="<?php echo htmlspecialchars($settingsValues['BACKGROUND_IMAGE_URL']); ?>" placeholder="assets/images/background.jpg">
+                <small class="muted">Sie können auch unten eine Datei hochladen.</small>
+              </label>
+              <label class="field">
+                <span>Hintergrund-Datei hochladen</span>
+                <?php if ($backgroundPreviewUrl): ?>
+                  <div class="asset-preview asset-preview--background" style="margin-bottom: 0.5rem; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 0.5rem; width: 100%; max-width: 260px; height: 120px; background: #f8fafc center/cover no-repeat url('<?php echo htmlspecialchars($backgroundPreviewUrl, ENT_QUOTES); ?>');"></div>
+                <?php endif; ?>
+                <input type="file" name="background_upload" accept="image/*">
+                <small class="muted">Unterstützte Formate: PNG, JPG, GIF, WebP, SVG.</small>
               </label>
               <label class="field">
                 <span>Grundfarbe (Base)</span>
