@@ -10,3 +10,4 @@ $ALLOWED_ORIGIN = 'https://chatbot.syltwerk.de'; // CORS: allow same origin
 // Safety: hard-limit max prompt size
 $MAX_CONTEXT_CHARS = 12000;
 $MAX_QUESTION_CHARS = 2000;
+$MAX_HISTORY_DEPTH = (int) (getenv('MAX_HISTORY_DEPTH') ?: 20);

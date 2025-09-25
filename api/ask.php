@@ -22,15 +22,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require __DIR__ . '/helper.php';
 require_once __DIR__ . '/../core/sanitizer.php';
 
+$conversationId = '';
+
 try {
     $tenant = $_GET['tenant'] ?? '';
     if (!$tenant) { throw new Exception('Missing tenant parameter.'); }
 
     $data = json_input();
-    $question = trim($data['question'] ?? '');
-    if ($question === '') { throw new Exception('Missing question.'); }
-    if (mb_strlen($question, 'UTF-8') > $MAX_QUESTION_CHARS) {
-        $question = mb_substr($question, 0, $MAX_QUESTION_CHARS, 'UTF-8');
+
+    if (isset($data['conversation_id'])) {
+        $cidCandidate = trim((string)$data['conversation_id']);
+        if ($cidCandidate !== '') {
+            $cidCandidate = preg_replace('/[^a-zA-Z0-9_-]/', '', $cidCandidate);
+            $conversationId = substr($cidCandidate, 0, 64);
+        }
+    }
+
+    $normalizeMessages = function (array $input, int $maxDepth) use ($MAX_QUESTION_CHARS): array {
+        $result = [];
+        foreach ($input as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $role = strtolower(trim((string)($item['role'] ?? '')));
+            $content = trim((string)($item['content'] ?? ''));
+            if ($content === '') {
+                continue;
+            }
+            if ($role === 'bot') {
+                $role = 'assistant';
+            }
+            if (!in_array($role, ['user', 'assistant', 'system'], true)) {
+                continue;
+            }
+            if ($role === 'user' && $MAX_QUESTION_CHARS > 0 && mb_strlen($content, 'UTF-8') > $MAX_QUESTION_CHARS) {
+                $content = mb_substr($content, 0, $MAX_QUESTION_CHARS, 'UTF-8');
+            }
+            $result[] = ['role' => $role, 'content' => $content];
+        }
+        if ($maxDepth > 0 && count($result) > $maxDepth) {
+            $result = array_slice($result, -$maxDepth);
+        }
+        return $result;
+    };
+
+    $messages = [];
+    if (isset($data['messages']) && is_array($data['messages'])) {
+        $messages = $normalizeMessages($data['messages'], $MAX_HISTORY_DEPTH);
+    } else {
+        $questionLegacy = trim($data['question'] ?? '');
+        if ($questionLegacy === '') { throw new Exception('Missing question.'); }
+        if ($MAX_QUESTION_CHARS > 0 && mb_strlen($questionLegacy, 'UTF-8') > $MAX_QUESTION_CHARS) {
+            $questionLegacy = mb_substr($questionLegacy, 0, $MAX_QUESTION_CHARS, 'UTF-8');
+        }
+        $historyLegacy = [];
+        if (isset($data['history']) && is_array($data['history'])) {
+            $historyLegacy = $normalizeMessages(
+                $data['history'],
+                $MAX_HISTORY_DEPTH > 0 ? max(0, $MAX_HISTORY_DEPTH - 1) : 0
+            );
+        }
+        $messages = $historyLegacy;
+        $messages[] = ['role' => 'user', 'content' => $questionLegacy];
+    }
+
+    if ($MAX_HISTORY_DEPTH > 0 && count($messages) > $MAX_HISTORY_DEPTH) {
+        $messages = array_slice($messages, -$MAX_HISTORY_DEPTH);
+    }
+
+    $question = '';
+    for ($i = count($messages) - 1; $i >= 0; $i--) {
+        if (($messages[$i]['role'] ?? '') === 'user') {
+            $candidate = trim((string)$messages[$i]['content']);
+            if ($candidate !== '') {
+                if ($MAX_QUESTION_CHARS > 0 && mb_strlen($candidate, 'UTF-8') > $MAX_QUESTION_CHARS) {
+                    $candidate = mb_substr($candidate, 0, $MAX_QUESTION_CHARS, 'UTF-8');
+                    $messages[$i]['content'] = $candidate;
+                }
+                $question = $candidate;
+                break;
+            }
+        }
+    }
+    if ($question === '') {
+        throw new Exception('Missing question.');
+    }
+
+    $lastIndex = count($messages) - 1;
+    if ($lastIndex < 0 || ($messages[$lastIndex]['role'] ?? '') !== 'user') {
+        $messages[] = ['role' => 'user', 'content' => $question];
+        if ($MAX_HISTORY_DEPTH > 0 && count($messages) > $MAX_HISTORY_DEPTH) {
+            $messages = array_slice($messages, -$MAX_HISTORY_DEPTH);
+        }
     }
 
     $hotel = load_hotel_config($tenant);
@@ -60,14 +143,18 @@ try {
 
     $sys2 = 'Kontext – Hotel: ' . $hotelName . "\n\n" . ($context ?: '(kein spezieller Kontext gefunden)');
 
+    $payloadMessages = [
+        ['role' => 'system', 'content' => $sys],
+        ['role' => 'system', 'content' => $sys2],
+    ];
+    foreach ($messages as $msg) {
+        $payloadMessages[] = $msg;
+    }
+
     $payload = [
         'model' => $OPENAI_MODEL,
         'temperature' => 0.3,
-        'messages' => [
-            ['role' => 'system', 'content' => $sys],
-            ['role' => 'system', 'content' => $sys2],
-            ['role' => 'user',   'content' => $question],
-        ],
+        'messages' => $payloadMessages,
     ];
 
     if (!$OPENAI_API_KEY || $OPENAI_API_KEY === 'PUT_YOUR_OPENAI_API_KEY_HERE') {
@@ -110,6 +197,7 @@ try {
     echo json_encode([
         'answer'  => $answer, // enthält nun <a href="...">…</a>
         'sources' => $sources,
+        'conversation_id' => $conversationId,
     ], JSON_UNESCAPED_UNICODE);
 
 } catch (Exception $e) {
@@ -117,5 +205,6 @@ try {
     echo json_encode([
         'answer'  => 'Entschuldigung, es gab ein technisches Problem (' . $e->getMessage() . ').',
         'sources' => [],
+        'conversation_id' => $conversationId,
     ], JSON_UNESCAPED_UNICODE);
 }

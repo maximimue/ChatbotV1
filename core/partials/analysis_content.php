@@ -153,13 +153,48 @@
       <h2>Letzte Anfragen</h2>
       <div class="table-scroll">
         <table>
-          <thead><tr><th>Zeit</th><th>Frage</th><th>Antwort</th></tr></thead>
+          <thead><tr><th>Zeit</th><th>Konversation</th><th>Frage</th><th>Antwort</th><th>Verlauf</th></tr></thead>
           <tbody>
             <?php foreach ($analysisData['logs'] as $row): ?>
+              <?php
+                $historyPretty = '';
+                if (!empty($row['history'])) {
+                    $decodedHistory = json_decode((string)$row['history'], true);
+                    if (is_array($decodedHistory)) {
+                        $parts = [];
+                        foreach ($decodedHistory as $item) {
+                            if (!is_array($item)) {
+                                continue;
+                            }
+                            $role = isset($item['role']) ? (string)$item['role'] : '';
+                            $content = isset($item['content']) ? (string)$item['content'] : '';
+                            if ($content === '') {
+                                continue;
+                            }
+                            $label = $role !== '' ? ucfirst($role) : 'Unbekannt';
+                            $parts[] = $label . ': ' . $content;
+                        }
+                        if ($parts) {
+                            $historyPretty = implode("\n\n", $parts);
+                        }
+                    }
+                }
+              ?>
               <tr>
                 <td><?php echo htmlspecialchars($row['time']); ?></td>
+                <td><?php echo htmlspecialchars($row['conversation_id'] ?? ''); ?></td>
                 <td><?php echo htmlspecialchars($row['question']); ?></td>
                 <td><?php echo nl2br(htmlspecialchars($row['answer'])); ?></td>
+                <td>
+                  <?php if ($historyPretty !== ''): ?>
+                    <details>
+                      <summary>anzeigen</summary>
+                      <pre><?php echo htmlspecialchars($historyPretty); ?></pre>
+                    </details>
+                  <?php else: ?>
+                    <span class="muted">–</span>
+                  <?php endif; ?>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
