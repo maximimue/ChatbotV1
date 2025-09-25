@@ -13,6 +13,39 @@ header('Content-Type: application/json; charset=utf-8');
 // Konfiguration und Datenbank laden
 require_once __DIR__ . '/init.php';
 require_once __DIR__ . '/sanitizer.php';
+require_once __DIR__ . '/http_client.php';
+
+/**
+ * Erstellt eine benutzerfreundliche Fehlermeldung inklusive Support-Hinweis.
+ *
+ * @param string|null $technicalCode
+ * @return array{code:string,message:string,support_hint:string}
+ */
+function chatbot_build_user_error(?string $technicalCode): array
+{
+    $supportHint = 'Bitte versuchen Sie es in ein paar Minuten erneut. Sollte das Problem weiterhin bestehen, kontaktieren Sie bitte unser Support-Team.';
+
+    $messages = [
+        'API_TIMEOUT' => 'die Verbindung zu unserem Wissensdienst hat zu lange gedauert.',
+        'API_CONNECTION_ERROR' => 'die Verbindung zu unserem Wissensdienst konnte nicht aufgebaut werden.',
+        'API_TRANSPORT_ERROR' => 'bei der Verbindung zu unserem Wissensdienst ist ein Transportfehler aufgetreten.',
+        'API_HTTP_429' => 'unser Wissensdienst ist kurzzeitig ausgelastet.',
+        'API_HTTP_5XX' => 'der Wissensdienst meldet derzeit einen Serverfehler.',
+        'API_INVALID_RESPONSE' => 'die Antwort unseres Wissensdienstes war unvollständig.',
+        'API_MALFORMED_RESPONSE' => 'die Antwort unseres Wissensdienstes hatte ein unerwartetes Format.',
+        'API_NO_STATUS' => 'der Wissensdienst hat keinen Status zurückgeliefert.',
+        'API_INIT_ERROR' => 'die Anfrage an den Wissensdienst konnte nicht vorbereitet werden.',
+    ];
+
+    $code = $technicalCode ?? 'API_REQUEST_FAILED';
+    $messageDetail = $messages[$code] ?? 'es ist ein technisches Problem aufgetreten.';
+
+    return [
+        'code' => $code,
+        'message' => 'Entschuldigung, ' . $messageDetail . ' ' . $supportHint,
+        'support_hint' => $supportHint,
+    ];
+}
 
 // Eingabedaten auslesen
 $rawInput = file_get_contents('php://input');
@@ -74,37 +107,74 @@ if ($conversationId !== '') {
     $payloadData['conversation_id'] = $conversationId;
 }
 $payload = json_encode($payloadData, JSON_UNESCAPED_UNICODE);
-$options = [
-    'http' => [
-        'method'  => 'POST',
-        'header'  => "Content-Type: application/json\r\n" .
-                    'Content-Length: ' . strlen($payload) . "\r\n",
-        'content' => $payload,
-        'timeout' => 30,
-    ],
-];
-$context = stream_context_create($options);
-$apiResponse = @file_get_contents($API_URL, false, $context);
 
-// Fehlerbehandlung bei der API‑Abfrage
-if ($apiResponse === false) {
-    $answer  = 'Entschuldigung, es gab ein Problem beim Abrufen der Antwort.';
-    $sources = [];
+$answer = '';
+$sources = [];
+$errorResponse = null;
+
+if ($payload === false) {
+    $errorResponse = chatbot_build_user_error('API_MALFORMED_RESPONSE');
 } else {
-    $responseData = json_decode($apiResponse, true);
-    if (is_array($responseData) && isset($responseData['answer'])) {
-        $answer  = is_string($responseData['answer']) ? $responseData['answer'] : '';
-        $sources = $responseData['sources'] ?? [];
-        if (isset($responseData['conversation_id'])) {
-            $cid = trim((string)$responseData['conversation_id']);
-            if ($cid !== '') {
-                $cid = preg_replace('/[^a-zA-Z0-9_-]/', '', $cid);
-                $conversationId = substr($cid, 0, 64);
+    $apiOptions = [
+        'max_attempts' => 3,
+        'connect_timeout' => 10,
+        'timeout' => 30,
+        'backoff_initial_ms' => 250,
+        'backoff_factor' => 2.0,
+    ];
+
+    if (isset($API_ERROR_LOG) && is_string($API_ERROR_LOG) && $API_ERROR_LOG !== '') {
+        $apiOptions['error_log_path'] = $API_ERROR_LOG;
+    }
+
+    $apiResult = chatbot_post_json_with_retry($API_URL, $payload, $apiOptions);
+
+    if ($apiResult['success']) {
+        $responseData = json_decode($apiResult['body'] ?? '', true);
+        if (!is_array($responseData)) {
+            if (!empty($apiOptions['error_log_path'])) {
+                chatbot_append_api_error_log($apiOptions['error_log_path'], [
+                    'url' => $API_URL,
+                    'status_code' => $apiResult['status_code'] ?? null,
+                    'error_code' => 'API_INVALID_RESPONSE',
+                    'body_excerpt' => chatbot_truncate_for_log($apiResult['body'] ?? null),
+                ]);
+            }
+            $errorResponse = chatbot_build_user_error('API_INVALID_RESPONSE');
+        } elseif (isset($responseData['error'])) {
+            $errorCode = isset($responseData['error_code']) ? (string)$responseData['error_code'] : 'API_REQUEST_FAILED';
+            if (!empty($apiOptions['error_log_path'])) {
+                chatbot_append_api_error_log($apiOptions['error_log_path'], [
+                    'url' => $API_URL,
+                    'status_code' => $apiResult['status_code'] ?? null,
+                    'error_code' => $errorCode,
+                    'body_excerpt' => chatbot_truncate_for_log($apiResult['body'] ?? null),
+                ]);
+            }
+            $errorResponse = chatbot_build_user_error($errorCode);
+        } elseif (!isset($responseData['answer'])) {
+            if (!empty($apiOptions['error_log_path'])) {
+                chatbot_append_api_error_log($apiOptions['error_log_path'], [
+                    'url' => $API_URL,
+                    'status_code' => $apiResult['status_code'] ?? null,
+                    'error_code' => 'API_MALFORMED_RESPONSE',
+                    'body_excerpt' => chatbot_truncate_for_log($apiResult['body'] ?? null),
+                ]);
+            }
+            $errorResponse = chatbot_build_user_error('API_MALFORMED_RESPONSE');
+        } else {
+            $answer  = is_string($responseData['answer']) ? $responseData['answer'] : '';
+            $sources = isset($responseData['sources']) && is_array($responseData['sources']) ? $responseData['sources'] : [];
+            if (isset($responseData['conversation_id'])) {
+                $cid = trim((string)$responseData['conversation_id']);
+                if ($cid !== '') {
+                    $cid = preg_replace('/[^a-zA-Z0-9_-]/', '', $cid);
+                    $conversationId = substr($cid, 0, 64);
+                }
             }
         }
     } else {
-        $answer  = 'Entschuldigung, keine gültige Antwort erhalten.';
-        $sources = [];
+        $errorResponse = chatbot_build_user_error($apiResult['error_code'] ?? null);
     }
 }
 
@@ -116,6 +186,17 @@ if ($conversationId === '') {
     } catch (Exception $e) {
         $conversationId = 'conv_' . substr(hash('sha256', (string)microtime(true)), 0, 20);
     }
+}
+
+if ($errorResponse !== null) {
+    echo json_encode([
+        'error' => $errorResponse['message'],
+        'error_code' => $errorResponse['code'],
+        'support_hint' => $errorResponse['support_hint'],
+        'sources' => [],
+        'conversation_id' => $conversationId,
+    ]);
+    exit;
 }
 
 // Vollständigen Verlauf (inkl. aktueller Antwort) für Logging vorbereiten

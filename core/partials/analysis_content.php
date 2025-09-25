@@ -78,6 +78,60 @@
     </div>
 
     <div class="card span-12">
+      <h2>API‑Gesundheit</h2>
+      <?php $healthData = $analysisData['health'] ?? []; ?>
+      <?php if (!empty($healthData['error'])): ?>
+        <div class="muted">Health-Check-Daten konnten nicht gelesen werden: <?php echo htmlspecialchars((string)$healthData['error']); ?></div>
+      <?php elseif (empty($healthData['latest'])): ?>
+        <div class="muted">Noch keine Health-Checks aufgezeichnet.</div>
+      <?php else: ?>
+        <?php $latestHealth = $healthData['latest']; ?>
+        <p>
+          <strong>Letzte Messung:</strong>
+          <?php echo htmlspecialchars($latestHealth['created_at'] ?? ''); ?> ·
+          <?php echo ((int)($latestHealth['success'] ?? 0) === 1) ? 'OK' : 'Fehler'; ?>
+          <?php if (!empty($latestHealth['status_code'])): ?>
+            (HTTP <?php echo (int)$latestHealth['status_code']; ?>)
+          <?php endif; ?>
+          <?php if (isset($latestHealth['latency_ms'])): ?>
+            · <?php echo number_format((float)$latestHealth['latency_ms'], 1, ',', '.'); ?> ms
+          <?php endif; ?>
+        </p>
+        <p>
+          <strong>Ø Latenz (24h):</strong>
+          <?php echo isset($healthData['avg_latency_24h']) && $healthData['avg_latency_24h'] !== null
+              ? number_format((float)$healthData['avg_latency_24h'], 1, ',', '.') . ' ms'
+              : '–'; ?>
+        </p>
+        <p>
+          <strong>Checks (24h):</strong> <?php echo number_format((int)($healthData['checks_24h'] ?? 0), 0, ',', '.'); ?>
+          <?php if (isset($healthData['error_rate_24h']) && $healthData['error_rate_24h'] !== null): ?>
+            · <strong>Fehlerquote:</strong> <?php echo number_format($healthData['error_rate_24h'] * 100, 1, ',', '.'); ?>%
+          <?php endif; ?>
+        </p>
+        <?php if (!empty($healthData['last_error'])): ?>
+          <?php $lastHealthError = $healthData['last_error']; ?>
+          <p>
+            <strong>Letzter Fehler:</strong>
+            <?php echo htmlspecialchars($lastHealthError['created_at'] ?? ''); ?>
+            <?php if (!empty($lastHealthError['status_code'])): ?>
+              · HTTP <?php echo (int)$lastHealthError['status_code']; ?>
+            <?php endif; ?>
+            <?php if (!empty($lastHealthError['error_code'])): ?>
+              · <?php echo htmlspecialchars((string)$lastHealthError['error_code']); ?>
+            <?php endif; ?>
+          </p>
+          <?php if (!empty($lastHealthError['response_excerpt'])): ?>
+            <details>
+              <summary>Antwortauszug anzeigen</summary>
+              <pre><?php echo htmlspecialchars((string)$lastHealthError['response_excerpt']); ?></pre>
+            </details>
+          <?php endif; ?>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
+
+    <div class="card span-12">
       <h2>Aktivitätsverlauf (letzte 30 Tage)</h2>
       <div class="table-scroll">
         <table>
