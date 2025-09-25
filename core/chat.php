@@ -12,6 +12,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 // Konfiguration und Datenbank laden
 require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/sanitizer.php';
 
 // Eingabedaten auslesen
 $rawInput = file_get_contents('php://input');
@@ -51,13 +52,15 @@ if ($apiResponse === false) {
 } else {
     $responseData = json_decode($apiResponse, true);
     if (is_array($responseData) && isset($responseData['answer'])) {
-        $answer  = $responseData['answer'];
+        $answer  = is_string($responseData['answer']) ? $responseData['answer'] : '';
         $sources = $responseData['sources'] ?? [];
     } else {
         $answer  = 'Entschuldigung, keine gültige Antwort erhalten.';
         $sources = [];
     }
 }
+
+$answer = chatbot_sanitize_bot_answer($answer);
 
 // Log speichern, falls Datenbank vorhanden ist
 if (isset($db) && $db instanceof PDO) {

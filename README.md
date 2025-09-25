@@ -98,6 +98,24 @@ external CDN.【F:core/init.php†L48-L118】
   `$FAQ_FILE`, providing immediate context updates for the API’s retrieval step and the
   chat responses.【F:core/admin.php†L126-L170】【F:api/ask.php†L20-L43】
 
+### Security smoke tests
+
+Before rolling out a new tenant (or after updating the shared core), run a quick
+browser-side smoke test against the deployed chat widget to ensure HTML sanitization is
+working as expected:
+
+1. Submit `<img onerror=alert()>` as a user question. The chat log must render the text
+   literally without triggering any pop-up.
+2. Submit `<a href="javascript:alert('x')">click</a>` and confirm that the link text is
+   displayed without turning into a clickable link.
+3. Verify that legitimate links keep working by asking the bot for the hotel website and
+   checking that only `http(s)`, `mailto:` or `tel:` URLs become clickable and open in a
+   new tab.
+
+Document the result of these checks in the onboarding notes for every new hotel. This
+ensures the shared sanitizer covers the tenant-specific prompts and FAQ content before
+the site goes live.
+
 With the shared core deployed once and lightweight wrappers for each hotel, you can
 add new properties quickly while keeping the chat experience, API integration, and
 operational tooling consistent across tenants.
