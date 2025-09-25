@@ -15,12 +15,102 @@ document.addEventListener('DOMContentLoaded', () => {
   const botName = (window.CHATBOT && window.CHATBOT.botName) ? String(window.CHATBOT.botName) : 'Bot';
   const userName = 'Du';
 
+  const ALLOWED_BOT_TAGS = new Set(['A', 'BR', 'STRONG', 'EM', 'UL', 'OL', 'LI', 'P']);
+  const ALLOWED_ATTRIBUTES = {
+    A: new Set(['href', 'title'])
+  };
+
+  function sanitizeBotNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return document.createTextNode(node.textContent || '');
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return document.createTextNode('');
+    }
+
+    const tagName = node.tagName.toUpperCase();
+    if (!ALLOWED_BOT_TAGS.has(tagName)) {
+      return document.createTextNode(node.textContent || '');
+    }
+
+    const cleanEl = document.createElement(tagName.toLowerCase());
+
+    if (ALLOWED_ATTRIBUTES[tagName]) {
+      for (const attr of Array.from(node.attributes)) {
+        const attrName = attr.name.toLowerCase();
+        if (!ALLOWED_ATTRIBUTES[tagName].has(attrName)) {
+          continue;
+        }
+
+        let value = attr.value || '';
+        if (tagName === 'A' && attrName === 'href') {
+          const trimmed = value.trim();
+          const lower = trimmed.toLowerCase();
+          if (!(lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('mailto:') || lower.startsWith('tel:'))) {
+            continue;
+          }
+          value = trimmed;
+        }
+
+        cleanEl.setAttribute(attrName, value);
+      }
+    }
+
+    if (tagName === 'A') {
+      cleanEl.setAttribute('rel', 'noopener noreferrer');
+      cleanEl.setAttribute('target', '_blank');
+    }
+
+    for (const child of Array.from(node.childNodes)) {
+      const sanitizedChild = sanitizeBotNode(child);
+      if (sanitizedChild) {
+        cleanEl.appendChild(sanitizedChild);
+      }
+    }
+    return cleanEl;
+  }
+
+  function sanitizeBotHtml(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    const fragment = document.createDocumentFragment();
+    for (const node of Array.from(template.content.childNodes)) {
+      const sanitized = sanitizeBotNode(node);
+      if (sanitized) {
+        fragment.appendChild(sanitized);
+      }
+    }
+    return fragment;
+  }
+
   function appendMessage(text, from = 'bot') {
     const div  = document.createElement('div');
     div.classList.add('msg', from);
     const name = from === 'user' ? userName : botName;
-    // HTML erlaubt für Bot-Antworten (Links etc.)
-    div.innerHTML = `<div class="bubble"><strong>${name}:</strong> ${String(text).replace(/\n/g, '<br>')}</div>`;
+
+    const bubble = document.createElement('div');
+    bubble.classList.add('bubble');
+
+    const label = document.createElement('strong');
+    label.textContent = `${name}:`;
+    bubble.appendChild(label);
+    bubble.appendChild(document.createTextNode(' '));
+
+    if (from === 'user') {
+      const safeText = String(text);
+      const parts = safeText.split(/\r?\n/);
+      parts.forEach((part, index) => {
+        bubble.appendChild(document.createTextNode(part));
+        if (index < parts.length - 1) {
+          bubble.appendChild(document.createElement('br'));
+        }
+      });
+    } else {
+      const fragment = sanitizeBotHtml(String(text));
+      bubble.appendChild(fragment);
+    }
+
+    div.appendChild(bubble);
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
   }

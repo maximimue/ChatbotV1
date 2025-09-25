@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require __DIR__ . '/helper.php';
+require_once __DIR__ . '/../core/sanitizer.php';
 
 try {
     $tenant = $_GET['tenant'] ?? '';
@@ -104,8 +105,7 @@ try {
         $sources[] = ['title' => 'Hotel FAQ', 'url' => '/'.$tenant.'/faq'];
     }
 
-    // Sicherheit: Script-Tags entfernen
-    $answer = preg_replace('/<\s*script[^>]*>.*?<\s*\/\s*script\s*>/is', '', $answer);
+    $answer = chatbot_sanitize_bot_answer($answer);
 
     echo json_encode([
         'answer'  => $answer, // enthält nun <a href="...">…</a>
