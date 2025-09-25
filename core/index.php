@@ -35,10 +35,12 @@ $logoSrc = chatbot_asset_url($LOGO_PATH ?? null, $HOTEL_BASE_PATH ?? null);
     // wird sie hier eingebunden. Dadurch lassen sich Farben und Layout einfach je
     // Standort anpassen, ohne den Core zu verändern.
     if (isset($hotelCssUrl) && $hotelCssUrl) {
-        echo '<link rel="stylesheet" href="' . htmlspecialchars($hotelCssUrl) . '">';
+        ?>
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($hotelCssUrl); ?>">
+    <?php
     }
-    include __DIR__ . '/partials/style_overrides.php';
     ?>
+    <?php include __DIR__ . '/partials/style_overrides.php'; ?>
 </head>
 <body>
     <div class="chat-overlay">
