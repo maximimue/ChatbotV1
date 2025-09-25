@@ -412,23 +412,17 @@ function admin_load_theme_colors_from_css(?string $cssUrl, ?string $hotelBasePat
 }
 
 /**
- * Ermittelt den anzuzeigenden Theme-Farbwert anhand neuer und alter Konfigurationsschlüssel.
+ * Ermittelt den anzuzeigenden Theme-Farbwert anhand der aktuellen Konfigurationsschlüssel.
  *
  * @param mixed $primaryValue
- * @param mixed $legacyValue
  * @param string $default
  * @param string|null $cssFallback
  */
-function admin_resolve_theme_color($primaryValue, $legacyValue, string $default, ?string $cssFallback = null): string
+function admin_resolve_theme_color($primaryValue, string $default, ?string $cssFallback = null): string
 {
     $normalizedPrimary = admin_normalize_hex_color(is_string($primaryValue) ? $primaryValue : null);
     if ($normalizedPrimary !== null) {
         return $normalizedPrimary;
-    }
-
-    $normalizedLegacy = admin_normalize_hex_color(is_string($legacyValue) ? $legacyValue : null);
-    if ($normalizedLegacy !== null) {
-        return $normalizedLegacy;
     }
 
     $normalizedCss = admin_normalize_hex_color($cssFallback);
@@ -496,19 +490,10 @@ $themeDefaults = [
     'THEME_COLOR_TEXT'             => '#0F172A',
 ];
 
-$legacyThemeValues = [
-    'THEME_COLOR_BASE'             => isset($CHAT_BACKGROUND_COLOR) ? (string)$CHAT_BACKGROUND_COLOR : null,
-    'THEME_COLOR_SURFACE'          => isset($CHAT_BOX_BACKGROUND_COLOR) ? (string)$CHAT_BOX_BACKGROUND_COLOR : null,
-    'THEME_COLOR_PRIMARY'          => isset($CHAT_PRIMARY_COLOR) ? (string)$CHAT_PRIMARY_COLOR : null,
-    'THEME_COLOR_PRIMARY_CONTRAST' => isset($CHAT_PRIMARY_TEXT_COLOR) ? (string)$CHAT_PRIMARY_TEXT_COLOR : null,
-    'THEME_COLOR_TEXT'             => isset($CHAT_BOT_TEXT_COLOR) ? (string)$CHAT_BOT_TEXT_COLOR : null,
-];
-
 foreach ($themeDefaults as $themeKey => $defaultValue) {
     $primaryValue = isset(${$themeKey}) ? (string)${$themeKey} : null;
-    $legacyValue = $legacyThemeValues[$themeKey] ?? null;
     $cssFallback = $cssThemeColors[$themeKey] ?? null;
-    $settingsValues[$themeKey] = admin_resolve_theme_color($primaryValue, $legacyValue, $defaultValue, $cssFallback);
+    $settingsValues[$themeKey] = admin_resolve_theme_color($primaryValue, $defaultValue, $cssFallback);
     ${$themeKey} = $settingsValues[$themeKey];
 }
 

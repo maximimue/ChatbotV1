@@ -12,23 +12,8 @@ $themeDefaults = [
     'THEME_COLOR_TEXT'             => '#0F172A',
 ];
 
-$legacyTranslations = [
-    'THEME_COLOR_BASE'             => $CHAT_BACKGROUND_COLOR ?? null,
-    'THEME_COLOR_SURFACE'          => $CHAT_BOX_BACKGROUND_COLOR ?? null,
-    'THEME_COLOR_PRIMARY'          => $CHAT_PRIMARY_COLOR ?? null,
-    'THEME_COLOR_PRIMARY_CONTRAST' => $CHAT_PRIMARY_TEXT_COLOR ?? null,
-    'THEME_COLOR_TEXT'             => $CHAT_BOT_TEXT_COLOR ?? null,
-];
-
 foreach ($themeDefaults as $themeKey => $defaultHex) {
     $value = isset(${$themeKey}) ? chatbot_normalize_hex_color((string)${$themeKey}) : null;
-
-    if ($value === null) {
-        $legacy = $legacyTranslations[$themeKey] ?? null;
-        if (is_string($legacy)) {
-            $value = chatbot_normalize_hex_color($legacy);
-        }
-    }
 
     if ($value === null || $value === $defaultHex) {
         continue;
