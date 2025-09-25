@@ -138,6 +138,107 @@ function admin_filter_flash(array $messages, string $tab): array
 }
 
 /**
+ * Ermittelt die Byte-Position eines Variablenzuweisungsblocks in einer PHP-Datei.
+ *
+ * @param string $contents
+ * @param string $key
+ * @return array{0:int,1:int}|null
+ */
+function admin_find_config_assignment_span(string $contents, string $key): ?array
+{
+    $tokens = token_get_all($contents);
+    $offset = 0;
+    $tokenCount = count($tokens);
+
+    for ($i = 0; $i < $tokenCount; $i++) {
+        $token = $tokens[$i];
+        $text = is_array($token) ? $token[1] : $token;
+
+        if (is_array($token) && $token[0] === T_VARIABLE && $token[1] === '$' . $key) {
+            $assignmentStart = $offset;
+            $j = $i + 1;
+            $currentOffset = $offset + strlen($text);
+            $isAssignment = false;
+
+            while ($j < $tokenCount) {
+                $next = $tokens[$j];
+                $nextText = is_array($next) ? $next[1] : $next;
+
+                if (is_array($next)) {
+                    $nextType = $next[0];
+                    if ($nextType === T_WHITESPACE || $nextType === T_COMMENT || $nextType === T_DOC_COMMENT) {
+                        $currentOffset += strlen($nextText);
+                        $j++;
+                        continue;
+                    }
+                }
+
+                if ($next === '=') {
+                    $currentOffset += strlen($nextText);
+                    $j++;
+                    $isAssignment = true;
+                }
+
+                break;
+            }
+
+            if (!$isAssignment) {
+                $offset += strlen($text);
+                continue;
+            }
+
+            $depth = 0;
+            $inHeredoc = false;
+            $endOffset = null;
+
+            for ($k = $j; $k < $tokenCount; $k++) {
+                $tok = $tokens[$k];
+
+                if (is_array($tok)) {
+                    $tokText = $tok[1];
+                    $tokType = $tok[0];
+
+                    if ($tokType === T_START_HEREDOC || (defined('T_START_NOWDOC') && $tokType === T_START_NOWDOC)) {
+                        $inHeredoc = true;
+                    } elseif ($tokType === T_END_HEREDOC) {
+                        $inHeredoc = false;
+                    }
+
+                    $currentOffset += strlen($tokText);
+                    continue;
+                }
+
+                $char = $tok;
+
+                if (!$inHeredoc) {
+                    if ($char === '(' || $char === '[' || $char === '{') {
+                        $depth++;
+                    } elseif ($char === ')' || $char === ']' || $char === '}') {
+                        if ($depth > 0) {
+                            $depth--;
+                        }
+                    } elseif ($char === ';' && $depth === 0) {
+                        $currentOffset += strlen($char);
+                        $endOffset = $currentOffset;
+                        break;
+                    }
+                }
+
+                $currentOffset += strlen($char);
+            }
+
+            if ($endOffset !== null) {
+                return [$assignmentStart, $endOffset - $assignmentStart];
+            }
+        }
+
+        $offset += strlen($text);
+    }
+
+    return null;
+}
+
+/**
  * Aktualisiert definierte Werte in der Konfigurationsdatei.
  *
  * @param string|null $configPath
@@ -164,11 +265,14 @@ function admin_update_config_values(?string $configPath, array $values, array &$
 
     foreach ($values as $key => $value) {
         $exported = var_export($value, true);
-        $pattern = '/\$' . preg_quote($key, '/') . '\s*=\s*[^;]*;/m';
-        if (preg_match($pattern, $contents)) {
-            $contents = preg_replace($pattern, '$' . $key . ' = ' . $exported . ';', $contents, 1);
+        $replacement = '$' . $key . ' = ' . $exported . ';';
+
+        $span = admin_find_config_assignment_span($contents, $key);
+        if ($span !== null) {
+            [$start, $length] = $span;
+            $contents = substr_replace($contents, $replacement, $start, $length);
         } else {
-            $contents = rtrim($contents) . PHP_EOL . '$' . $key . ' = ' . $exported . ';' . PHP_EOL;
+            $contents = rtrim($contents) . PHP_EOL . $replacement . PHP_EOL;
         }
     }
 
