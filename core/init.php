@@ -131,8 +131,20 @@ if (isset($LOG_DB) && is_string($LOG_DB)) {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             question TEXT NOT NULL,
             answer TEXT NOT NULL,
+            conversation_id TEXT,
+            history TEXT,
             time DATETIME DEFAULT CURRENT_TIMESTAMP
         )');
+        try {
+            $db->exec('ALTER TABLE logs ADD COLUMN conversation_id TEXT');
+        } catch (Exception $e) {
+            // Spalte existiert bereits
+        }
+        try {
+            $db->exec('ALTER TABLE logs ADD COLUMN history TEXT');
+        } catch (Exception $e) {
+            // Spalte existiert bereits
+        }
     } catch (Exception $e) {
         // Bei Fehlern die Verbindung null setzen
         $db = null;

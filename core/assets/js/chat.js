@@ -139,6 +139,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const history = [];
+  const MAX_HISTORY = 20;
+  let conversationId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : 'conv-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+
+  function trimHistory() {
+    if (history.length > MAX_HISTORY) {
+      history.splice(0, history.length - MAX_HISTORY);
+    }
+  }
+
+  function buildHistoryPayload() {
+    return history.map((entry) => ({
+      role: entry.role,
+      content: entry.content,
+    }));
+  }
+
   form.addEventListener('submit', (ev) => {
     ev.preventDefault();
     const question = (input.value || '').trim();
@@ -149,16 +168,31 @@ document.addEventListener('DOMContentLoaded', () => {
     send.disabled = true;
     showTypingIndicator();
 
+    const historyForRequest = buildHistoryPayload();
+
+    // Aktuelle User-Nachricht direkt in der History merken
+    history.push({ role: 'user', content: question });
+    trimHistory();
+
     fetch('chat.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question })
+      body: JSON.stringify({
+        question,
+        history: historyForRequest,
+        conversation_id: conversationId,
+      })
     })
     .then(res => res.json())
     .then(data => {
       removeTypingIndicator();
       const answer = data && data.answer ? data.answer : 'Entschuldigung, keine Antwort erhalten.';
       appendMessage(answer, 'bot');
+      if (data && typeof data.conversation_id === 'string' && data.conversation_id.trim() !== '') {
+        conversationId = data.conversation_id.trim();
+      }
+      history.push({ role: 'assistant', content: String(answer) });
+      trimHistory();
       // Quellenanzeige ist bewusst deaktiviert
     })
     .catch(() => {

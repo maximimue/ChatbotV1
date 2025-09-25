@@ -108,7 +108,7 @@ function analytics_fetch_data(?PDO $db, array $filters): array
         $stats = $stmtTop->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         // Letzte Einträge
-        $sqlLast = "SELECT question, answer, time
+        $sqlLast = "SELECT question, answer, time, conversation_id, history
                     FROM logs
                     $whereSql
                     ORDER BY time DESC
@@ -203,9 +203,9 @@ function analytics_export_csv(?PDO $db, array $filters): void
     if ($out === false) {
         exit;
     }
-    fputcsv($out, ['time', 'question', 'answer']);
+    fputcsv($out, ['time', 'question', 'answer', 'conversation_id', 'history']);
 
-    $sql = "SELECT time, question, answer
+    $sql = "SELECT time, question, answer, conversation_id, history
             FROM logs
             $whereSql
             ORDER BY time DESC
@@ -214,7 +214,13 @@ function analytics_export_csv(?PDO $db, array $filters): void
     foreach ($params as $k => $v) { $stmt->bindValue($k, $v); }
     $stmt->execute();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        fputcsv($out, [$row['time'], $row['question'], $row['answer']]);
+        fputcsv($out, [
+            $row['time'],
+            $row['question'],
+            $row['answer'],
+            $row['conversation_id'] ?? '',
+            $row['history'] ?? '',
+        ]);
     }
     fclose($out);
     exit;
