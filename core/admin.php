@@ -216,13 +216,106 @@ function admin_normalize_hex_color(?string $value): ?string
 }
 
 /**
+ * Liest Theme-Farben aus einer CSS-Datei des Hotels aus.
+ *
+ * @param string|null $cssUrl
+ * @param string|null $hotelBasePath
+ * @return array<string,string>
+ */
+function admin_load_theme_colors_from_css(?string $cssUrl, ?string $hotelBasePath): array
+{
+    if (!is_string($cssUrl)) {
+        return [];
+    }
+
+    $cssUrl = trim($cssUrl);
+    if ($cssUrl === '') {
+        return [];
+    }
+
+    $parsedUrl = @parse_url($cssUrl);
+    if ($parsedUrl === false) {
+        $parsedUrl = [];
+    }
+
+    $scheme = isset($parsedUrl['scheme']) ? (string)$parsedUrl['scheme'] : '';
+    $path = '';
+
+    if ($scheme !== '' && $scheme !== 'file') {
+        if (preg_match('/^[A-Za-z]$/', $scheme) === 1 && isset($parsedUrl['path'])) {
+            $path = $scheme . ':' . $parsedUrl['path'];
+            $scheme = '';
+        } else {
+            return [];
+        }
+    }
+
+    if ($scheme === '' || $scheme === 'file') {
+        if ($scheme === '' && isset($parsedUrl['host']) && $parsedUrl['host'] !== '') {
+            return [];
+        }
+
+        if ($path === '') {
+            $path = isset($parsedUrl['path']) ? (string)$parsedUrl['path'] : $cssUrl;
+        }
+
+        if ($path === '') {
+            return [];
+        }
+
+        $isAbsolute = ($path[0] ?? '') === '/' || preg_match('/^[A-Za-z]:[\\\/]/', $path) === 1;
+        if (!$isAbsolute) {
+            if (!is_string($hotelBasePath) || trim($hotelBasePath) === '') {
+                return [];
+            }
+
+            $path = rtrim($hotelBasePath, '/\\') . '/' . ltrim($path, '/\\');
+        }
+    } else {
+        return [];
+    }
+
+    if ($path === '' || !is_readable($path)) {
+        return [];
+    }
+
+    $cssContent = @file_get_contents($path);
+    if (!is_string($cssContent) || $cssContent === '') {
+        return [];
+    }
+
+    $variableMap = [
+        'THEME_COLOR_BASE'             => '--theme-color-base',
+        'THEME_COLOR_SURFACE'          => '--theme-color-surface',
+        'THEME_COLOR_PRIMARY'          => '--theme-color-primary',
+        'THEME_COLOR_PRIMARY_CONTRAST' => '--theme-color-primary-contrast',
+        'THEME_COLOR_TEXT'             => '--theme-color-text',
+    ];
+
+    $colors = [];
+    foreach ($variableMap as $settingKey => $variableName) {
+        $pattern = '/' . preg_quote($variableName, '/') . '\s*:\s*([^;]+);/i';
+        if (preg_match($pattern, $cssContent, $matches)) {
+            $value = trim((string)preg_replace('/!important\b/i', '', $matches[1]));
+            $normalized = admin_normalize_hex_color($value);
+            if ($normalized !== null) {
+                $colors[$settingKey] = $normalized;
+            }
+        }
+    }
+
+    return $colors;
+}
+
+/**
  * Ermittelt den anzuzeigenden Theme-Farbwert anhand neuer und alter Konfigurationsschlüssel.
  *
  * @param mixed $primaryValue
  * @param mixed $legacyValue
  * @param string $default
+ * @param string|null $cssFallback
  */
-function admin_resolve_theme_color($primaryValue, $legacyValue, string $default): string
+function admin_resolve_theme_color($primaryValue, $legacyValue, string $default, ?string $cssFallback = null): string
 {
     $normalizedPrimary = admin_normalize_hex_color(is_string($primaryValue) ? $primaryValue : null);
     if ($normalizedPrimary !== null) {
@@ -232,6 +325,11 @@ function admin_resolve_theme_color($primaryValue, $legacyValue, string $default)
     $normalizedLegacy = admin_normalize_hex_color(is_string($legacyValue) ? $legacyValue : null);
     if ($normalizedLegacy !== null) {
         return $normalizedLegacy;
+    }
+
+    $normalizedCss = admin_normalize_hex_color($cssFallback);
+    if ($normalizedCss !== null) {
+        return $normalizedCss;
     }
 
     return $default;
@@ -275,6 +373,8 @@ if ($faqPath && is_readable($faqPath)) {
 }
 $faqError = '';
 
+$cssThemeColors = admin_load_theme_colors_from_css($HOTEL_CSS_URL ?? null, $HOTEL_BASE_PATH ?? null);
+
 $settingsValues = [
     'HOTEL_NAME'           => isset($HOTEL_NAME) ? (string)$HOTEL_NAME : '',
     'HOTEL_URL'            => isset($HOTEL_URL) ? (string)$HOTEL_URL : '',
@@ -303,7 +403,8 @@ $legacyThemeValues = [
 foreach ($themeDefaults as $themeKey => $defaultValue) {
     $primaryValue = isset(${$themeKey}) ? (string)${$themeKey} : null;
     $legacyValue = $legacyThemeValues[$themeKey] ?? null;
-    $settingsValues[$themeKey] = admin_resolve_theme_color($primaryValue, $legacyValue, $defaultValue);
+    $cssFallback = $cssThemeColors[$themeKey] ?? null;
+    $settingsValues[$themeKey] = admin_resolve_theme_color($primaryValue, $legacyValue, $defaultValue, $cssFallback);
     ${$themeKey} = $settingsValues[$themeKey];
 }
 
