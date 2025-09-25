@@ -26,10 +26,12 @@ $chatReturnUrl = $chatReturnUrl ?? 'index.php';
     <link rel="stylesheet" href="<?php echo htmlspecialchars($coreRelative); ?>/assets/css/style.css">
     <?php
     if (isset($hotelCssUrl) && $hotelCssUrl) {
-        echo '<link rel="stylesheet" href="' . htmlspecialchars($hotelCssUrl) . '">';
+        ?>
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($hotelCssUrl); ?>">
+    <?php
     }
-    include __DIR__ . '/partials/style_overrides.php';
     ?>
+    <?php include __DIR__ . '/partials/style_overrides.php'; ?>
 </head>
 <body class="privacy-page">
     <div class="chat-overlay">
