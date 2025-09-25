@@ -18,29 +18,22 @@
   --theme-color-primary-contrast: #ffffff;
   --theme-color-text: #2d393b;
 
-  --chat-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  --chat-background-image: url('../images/background.jpg');
-  --chat-background-attachment: fixed;
-
-  /* CI-spezifische Ableitungen auf Basis der Tokens */
-  --chat-header-background: transparent;
-  --chat-claim-letter-spacing: 0.18em;
-  --chat-user-letter-spacing: 0.03em;
-  --chat-button-background: var(--theme-color-primary-contrast);
-  --chat-button-color: var(--theme-color-primary);
-  --chat-button-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 25%, var(--theme-color-primary-contrast) 75%);
-  --chat-button-disabled-background: color-mix(in srgb, var(--theme-color-primary) 30%, var(--theme-color-primary-contrast) 70%);
-  --chat-button-disabled-border: 1px solid color-mix(in srgb, var(--theme-color-primary) 25%, var(--theme-color-primary-contrast) 75%);
-  --chat-privacy-color: color-mix(in srgb, var(--theme-color-primary-contrast) 80%, var(--theme-color-primary) 20%);
-  --chat-return-link-background: color-mix(in srgb, var(--theme-color-primary) 75%, transparent);
+  --theme-font-family: "FuturaCustom", "Futura", "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --theme-background-image: url('../images/background.jpg');
+  --theme-background-attachment: fixed;
 }
 
 body {
-  background-image: var(--chat-background-image) !important;
+  background-image: var(--theme-background-image) !important;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   background-attachment: fixed;
+}
+
+.chat-box header {
+  background: transparent;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-color-primary) 25%, var(--theme-color-primary-contrast) 75%);
 }
 
 .chat-box header img {
@@ -61,6 +54,11 @@ h3 {
 
 .brand-claim {
   text-align: center;
+  letter-spacing: 0.18em;
+}
+
+.msg.user .bubble {
+  letter-spacing: 0.03em;
 }
 
 .privacy-box .privacy-content h1 {
@@ -80,4 +78,26 @@ h3 {
 .privacy-box .privacy-content address {
   color: color-mix(in srgb, var(--theme-color-primary-contrast) 70%, var(--theme-color-primary) 30%);
   margin: 0 0 12px;
+}
+
+.chat-controls .privacy {
+  color: color-mix(in srgb, var(--theme-color-primary-contrast) 80%, var(--theme-color-primary) 20%);
+}
+
+.chat-controls button {
+  background: var(--theme-color-primary-contrast);
+  color: var(--theme-color-primary);
+  border: 1px solid color-mix(in srgb, var(--theme-color-primary) 25%, var(--theme-color-primary-contrast) 75%);
+}
+
+.chat-controls button:disabled {
+  background: color-mix(in srgb, var(--theme-color-primary) 30%, var(--theme-color-primary-contrast) 70%);
+  border: 1px solid color-mix(in srgb, var(--theme-color-primary) 25%, var(--theme-color-primary-contrast) 75%);
+  color: color-mix(in srgb, var(--theme-color-primary) 55%, var(--theme-color-primary-contrast) 45%);
+}
+
+.return-link {
+  background: color-mix(in srgb, var(--theme-color-primary) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-color-primary) 35%, transparent);
+  color: var(--theme-color-primary-contrast);
 }
