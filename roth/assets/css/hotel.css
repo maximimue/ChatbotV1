@@ -10,13 +10,13 @@
   --theme-color-primary-contrast: #ffffff;
   --theme-color-text: #000000;
 
-  --chat-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  --chat-background-image: url('../images/background.jpg');
-  --chat-background-attachment: fixed;
+  --theme-font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --theme-background-image: url('../images/background.jpg');
+  --theme-background-attachment: fixed;
 }
 
 body {
-  background-image: var(--chat-background-image) !important;
+  background-image: var(--theme-background-image) !important;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
