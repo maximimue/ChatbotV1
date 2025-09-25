@@ -734,7 +734,7 @@ $backgroundPreviewUrl = chatbot_asset_url($settingsValues['BACKGROUND_IMAGE_URL'
             <h2>Design &amp; Branding</h2>
             <p class="muted">Steuern Sie Hintergrundbild und Farbwerte. Verwenden Sie den Upload, um ein neues Bild festzulegen.</p>
             <div class="grid two-cols">
-              <label class="field" style="grid-column: span 2;">
+              <label class="field" style="grid-column: span 1;">
                 <span>Hintergrund-Datei hochladen</span>
                 <?php if ($backgroundPreviewUrl): ?>
                   <div class="asset-preview asset-preview--background" style="margin-bottom: 0.5rem; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 0.5rem; width: 100%; max-width: 260px; height: 120px; background: #f8fafc center/cover no-repeat url('<?php echo htmlspecialchars($backgroundPreviewUrl, ENT_QUOTES); ?>');"></div>
