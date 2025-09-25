@@ -66,6 +66,7 @@ function analytics_build_where(array $filters): array
  *   byDay:array<int,array<string,mixed>>,
  *   byDow:array<int,array<string,mixed>>,
  *   totals:array<string,int>,
+ *   health:array<string,mixed>,
  *   fatalError:?string
  * }
  */
@@ -77,10 +78,19 @@ function analytics_fetch_data(?PDO $db, array $filters): array
     $byDay  = [];
     $byDow  = [];
     $totals = ['total'=>0,'empty'=>0,'avg_q_len'=>0,'avg_a_len'=>0];
+    $health = [
+        'latest' => null,
+        'avg_latency_24h' => null,
+        'checks_24h' => 0,
+        'failures_24h' => 0,
+        'error_rate_24h' => null,
+        'last_error' => null,
+        'error' => null,
+    ];
     $fatalError = null;
 
     if (!$db instanceof PDO) {
-        return compact('stats', 'logs', 'byHour', 'byDay', 'byDow', 'totals', 'fatalError');
+        return compact('stats', 'logs', 'byHour', 'byDay', 'byDow', 'totals', 'health', 'fatalError');
     }
 
     $parts = analytics_build_where($filters);
@@ -170,11 +180,47 @@ function analytics_fetch_data(?PDO $db, array $filters): array
         foreach ($params as $k => $v) { $stmtDow->bindValue($k, $v); }
         $stmtDow->execute();
         $byDow = $stmtDow->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+        try {
+            $stmtLatestHealth = $db->query("SELECT latency_ms, status_code, success, error_code, response_excerpt, created_at FROM health_checks ORDER BY created_at DESC LIMIT 1");
+            if ($stmtLatestHealth instanceof PDOStatement) {
+                $row = $stmtLatestHealth->fetch(PDO::FETCH_ASSOC) ?: null;
+                if ($row !== null) {
+                    $row['success'] = (int)($row['success'] ?? 0);
+                    $row['latency_ms'] = isset($row['latency_ms']) ? (float)$row['latency_ms'] : null;
+                    $health['latest'] = $row;
+                }
+            }
+
+            $stmtAggHealth = $db->query("SELECT AVG(latency_ms) AS avg_latency, COUNT(*) AS total_checks, SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) AS failed_checks FROM health_checks WHERE created_at >= datetime('now', '-24 hours')");
+            if ($stmtAggHealth instanceof PDOStatement) {
+                $row = $stmtAggHealth->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    $health['avg_latency_24h'] = isset($row['avg_latency']) ? (float)$row['avg_latency'] : null;
+                    $health['checks_24h'] = (int)($row['total_checks'] ?? 0);
+                    $health['failures_24h'] = (int)($row['failed_checks'] ?? 0);
+                    if ($health['checks_24h'] > 0) {
+                        $health['error_rate_24h'] = $health['failures_24h'] / $health['checks_24h'];
+                    }
+                }
+            }
+
+            $stmtLastError = $db->query("SELECT latency_ms, status_code, error_code, response_excerpt, created_at FROM health_checks WHERE success = 0 ORDER BY created_at DESC LIMIT 1");
+            if ($stmtLastError instanceof PDOStatement) {
+                $row = $stmtLastError->fetch(PDO::FETCH_ASSOC) ?: null;
+                if ($row !== null) {
+                    $row['latency_ms'] = isset($row['latency_ms']) ? (float)$row['latency_ms'] : null;
+                    $health['last_error'] = $row;
+                }
+            }
+        } catch (Throwable $healthEx) {
+            $health['error'] = $healthEx->getMessage();
+        }
     } catch (Throwable $ex) {
         $fatalError = $ex->getMessage();
     }
 
-    return compact('stats', 'logs', 'byHour', 'byDay', 'byDow', 'totals', 'fatalError');
+    return compact('stats', 'logs', 'byHour', 'byDay', 'byDow', 'totals', 'health', 'fatalError');
 }
 
 /**

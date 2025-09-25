@@ -33,6 +33,9 @@ $FAQ_FILE = __DIR__ . '/data/faq.md';
 // Pfad zur SQLite‑Datenbank, in der Benutzerfragen und Antworten protokolliert werden.
 $LOG_DB = __DIR__ . '/data/logs.sqlite';
 
+// Optional: Datei für detaillierte API-Fehlerlogs (muss beschreibbar sein).
+// $API_ERROR_LOG = __DIR__ . '/data/api_errors.log';
+
 // URL der Haupt‑Hotel‑Website. Diese wird für den "Zurück zur Website"‑Link verwendet.
 $HOTEL_URL = 'https://www.example-hotel.de';
 

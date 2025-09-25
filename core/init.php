@@ -132,6 +132,15 @@ if (isset($LOG_DB) && is_string($LOG_DB)) {
         } catch (Exception $e) {
             // Spalte existiert bereits
         }
+        $db->exec('CREATE TABLE IF NOT EXISTS health_checks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            status_code INTEGER,
+            latency_ms REAL,
+            success INTEGER NOT NULL,
+            error_code TEXT,
+            response_excerpt TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )');
     } catch (Exception $e) {
         // Bei Fehlern die Verbindung null setzen
         $db = null;

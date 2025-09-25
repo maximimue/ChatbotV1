@@ -92,6 +92,10 @@ external CDN.【F:core/init.php†L48-L118】
   logging routines in `core/init.php` automatically create the `logs` table and the
   analytics helpers aggregate question/answer statistics, hourly/daily usage, and top
   topics for operators.【F:core/init.php†L30-L71】【F:core/analytics_helpers.php†L1-L88】
+- **API health monitoring:** Optional errors can be persisted by defining
+  `$API_ERROR_LOG`. The CLI script `core/cli/health_check.php` pings the configured
+  API, measures latency, and stores the result in the shared SQLite database so that
+  the analytics dashboard can surface recent latencies and failure rates.【F:core/config.sample.php†L36-L38】【F:core/cli/health_check.php†L1-L123】【F:core/analytics_helpers.php†L1-L210】
 - **FAQ management:** The FAQ editor writes directly to the Markdown file defined by
   `$FAQ_FILE`, providing immediate context updates for the API’s retrieval step and the
   chat responses.【F:core/admin.php†L126-L170】【F:api/ask.php†L20-L43】
